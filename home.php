@@ -14,6 +14,7 @@ http://www.htmlfivewow.com/
 </head>
 <body>
 	<video id="videoPlayer" controls="controls"></video>
+	<p class="sub-preview">Preview Text</p>
 	
 	<div id="grid">
 		<table>
@@ -31,15 +32,16 @@ http://www.htmlfivewow.com/
 	
 	<form id="controls" action="<?php echo $_SERVER['REQUEST_URI']; ?>" method="post">
 		<div class="subtitleControls">
-			<a href="#" class="start">Start</a>
-			<a href="#" class="stop">Stop</a>
-			<a href="#" class="stop-start">Stop/Start</a>
+			<a href="#" class="start" title="Start">Start</a>
+			<a href="#" class="stop" title="Stop">Stop</a>
+			<a href="#" class="stop-start" title="Stop/Start">Stop/Start</a>
 		</div>
 		
 		<div class="fileControls">
-			<input type="file" id="subtitlesFile" name="subtitles_file" />
-			<input type="file" id="videoFile" name="video_file" />
-			<input type="submit" value="Save SRT" />
+			<input type="file" id="subtitlesFile" class="text" name="subtitles_file" />
+			<input type="file" id="videoFile" class="video" name="video_file" />
+			
+			<input type="submit" class="button" value="Save SRT" />
 		</div>
 	</form>
 </body>

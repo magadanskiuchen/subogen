@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<!--
+http://www.w3.org/TR/2011/WD-html5-20110113/video.html
+http://www.w3.org/TR/FileAPI/
+http://www.htmlfivewow.com/
+-->
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>Multimedia Web App</title>
+	<link rel="stylesheet" type="text/css" href="home.css" />
+	<script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
+	<script type="text/javascript" src="js/home.js"></script>
+</head>
+<body>
+	<video id="videoPlayer" controls="controls"></video>
+	
+	<div id="grid">
+		<table>
+			<thead>
+				<tr>
+					<th>Subtitle</th>
+					<th class="time">Start Time</th>
+					<th class="time">End Time</th>
+				</tr>
+			</thead>
+			<tbody contenteditable="true">
+			</tbody>
+		</table>
+	</div>
+	
+	<form id="controls" action="<?php echo $_SERVER['REQUEST_URI']; ?>" method="post">
+		<div class="subtitleControls">
+			<a href="#" class="start">Start</a>
+			<a href="#" class="stop">Stop</a>
+			<a href="#" class="stop-start">Stop/Start</a>
+		</div>
+		
+		<div class="fileControls">
+			<input type="file" id="subtitlesFile" name="subtitles_file" />
+			<input type="file" id="videoFile" name="video_file" />
+			<input type="submit" value="Save SRT" />
+		</div>
+	</form>
+</body>
+</html>

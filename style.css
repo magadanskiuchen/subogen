@@ -1,0 +1,26 @@
+@charset "utf-8";
+
+* { margin: 0; padding: 0; -moz-box-sizing: border-box; box-sizing: border-box; }
+html, body { width: 100%; height: 100%; }
+
+body { background: #666; color: #FFF; font: normal 12px/1.2 Verdana, Arial, Helvetica, sans-serif; }
+
+.hidden { display: none; }
+
+input[type="submit"],
+button,
+.button { padding: 2px 6px; background: #FFF; border: 1px solid #333; border-radius: 5px;
+		  font: bold 11px Verdana, Arial, Helvetica, sans-serif; cursor: pointer; }
+
+.col { position: relative; float: left; height: 100%; border-style: solid; border-width: 10px 0 0 10px; border-color: transparent; }
+.row { height: 10%; border-top: 10px solid transparent; }
+.fileContainer { opacity: 0; position: absolute; }
+
+#leftCol { width: 20%; }
+#rightCol { width: 80%; border-right-width: 10px; }
+#subtitleList { display: block; width: 100%; height: 90%; }
+#player { width: 100%; height: 100%; max-width: 100%; max-height: 90%; }
+
+#progressBar { display: none; width: 200px; height: 18px; background: #FFF; border: 1px solid #333; border-radius: 6px; box-sizing: content-box; }
+#progressComplete { width: 0; text-align: center; background: #666; color: #FFF; font-weight: bold; line-height: 18px; border-radius: 4px; }
+#progressComplete:after { content: "%"; }

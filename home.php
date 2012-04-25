@@ -14,7 +14,7 @@ http://www.htmlfivewow.com/
 </head>
 <body>
 	<video id="videoPlayer" controls="controls"></video>
-	<p class="sub-preview">Preview Text</p>
+	<p class="sub-preview"></p>
 	
 	<div id="grid">
 		<table>

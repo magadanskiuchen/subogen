@@ -13,6 +13,7 @@ jQuery(function($) {
 	var videoFile = $('#videoFile');
 	
 	var currentLine = null;
+	var subData = [];
 	
 	render();
 	
@@ -86,6 +87,35 @@ jQuery(function($) {
 		return false;
 	});
 	
+	controls.find('.start').click(function(e) {
+		e.preventDefault();
+		
+		setStart();
+	});
+	
+	controls.find('.stop').click(function(e) {
+		e.preventDefault();
+		
+		setStop();
+	});
+	
+	controls.find('.stop-start').click(function(e) {
+		e.preventDefault();
+		
+		setStop(true);
+	});
+	
+	player[0].addEventListener('timeupdate', function(e) {
+		var time = e.srcElement.currentTime;
+		var subDataItem = getSubDataByTime(time);
+		
+		if (typeof(subDataItem) != 'undefined' && subDataItem.start < subDataItem.end) {
+			preview.text(subDataItem.text);
+		} else {
+			preview.text('');
+		}
+	}, false);
+	
 	function render() {
 		player.width(app.width());
 		player.height( (app.height() - controls.outerHeight(true)) * 0.67 );
@@ -123,7 +153,7 @@ jQuery(function($) {
 		
 		reader.onloadend = function(e) {
 			var text = this.result;
-			var subData = parseSubs(text);
+			subData = parseSubs(text);
 			
 			for (var i in subData) {
 				var sub = subData[i];
@@ -171,6 +201,7 @@ jQuery(function($) {
 		var time = player[0].currentTime;
 		var formattedTime = formatTime(time);
 		
+		subData[currentLine].start = time
 		gridText.find('tr.currentLine .start').attr('data-time', time).text(formattedTime);
 	}
 	
@@ -180,12 +211,42 @@ jQuery(function($) {
 		var time = player[0].currentTime;
 		var formattedTime = formatTime(time);
 		
+		subData[currentLine].end = time
 		gridText.find('tr.currentLine .end').attr('data-time', time).text(formattedTime);
 		
 		if (currentLine+1 < gridText.find('tr').length) {
 			setCurrentLine(currentLine+1);
 			if (start) setTimeout(setStart, 20);
 		}
+	}
+	
+	function getSubDataByTime(time) {
+		var delta = 1;
+		var midIndex = 0;
+		var item = null;
+		
+		for (var i = 0; i < subData.length; ++1) {
+			if (delta < 0) {
+				midIndex = parseInt( (midIndex + 0) / 2 );
+			} else {
+				midIndex = parseInt( (midIndex + subData.length) / 2 );
+			}
+			
+			item = subData[midIndex];
+			// if (item.start < time && item.end > time) break;
+			
+			if (item.start > time) {
+				delta = -1;
+			} else {
+				if (item.end < time && item.end != 0) {
+					delta = 1;
+				} else {
+					break;
+				}
+			}
+		}
+		
+		return item;
 	}
 });
 

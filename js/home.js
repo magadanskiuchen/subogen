@@ -109,7 +109,7 @@ jQuery(function($) {
 		var time = e.srcElement.currentTime;
 		var subDataItem = getSubDataByTime(time);
 		
-		if (typeof(subDataItem) != 'undefined' && subDataItem.start < subDataItem.end) {
+		if (subDataItem && typeof(subDataItem.start) != 'undefined' && subDataItem.start < subDataItem.end) {
 			preview.text(subDataItem.text);
 		} else {
 			preview.text('');
@@ -153,7 +153,11 @@ jQuery(function($) {
 		
 		reader.onloadend = function(e) {
 			var text = this.result;
-			subData = parseSubs(text);
+			if (file.name.match(/\.srt$/i)) {
+				subData = parseSubsAsSRT(text);
+			} else {
+				subData = parseSubsAsPlain(text);
+			}
 			
 			for (var i in subData) {
 				var sub = subData[i];
@@ -165,7 +169,7 @@ jQuery(function($) {
 		reader.readAsText(file);
 	}
 	
-	function parseSubs(text) {
+	function parseSubsAsPlain(text) {
 		var data = [];
 		var lines = text.split(/\n/);
 		
@@ -174,6 +178,31 @@ jQuery(function($) {
 		}
 		
 		return data;
+	}
+	
+	function parseSubsAsSRT(text) {
+		var data = [];
+		
+		var lines = text.match(/(\d+)[^\n]*\n(\d\d:\d\d:\d\d,\d\d\d)\s-->\s(\d\d:\d\d:\d\d,\d\d\d)[^\n]*\n(.*)/g);
+		if (lines && lines.length) {
+			for (var line in lines) {
+				var lineData = lines[line].match(/(\d+)[^\n]*\n(\d\d:\d\d:\d\d,\d\d\d)\s-->\s(\d\d:\d\d:\d\d,\d\d\d)[^\n]*\n(.*)/);
+				if (lineData && lineData.length) {
+					var item = {};
+					item.start = parseTime(lineData[2]);
+					item.end = parseTime(lineData[3]);
+					item.text = lineData[4];
+					
+					data.push(item);
+				}
+			}
+		}
+		
+		return data;
+	}
+	
+	function parseTime(timeString) {
+		return (3600*timeString.substr(0, 2)) + (60*timeString.substr(3, 2)) + (1*timeString.substr(6, 2)) + (0.001*timeString.substr(9, 3));
 	}
 	
 	function isPlaying() {
@@ -222,26 +251,31 @@ jQuery(function($) {
 	
 	function getSubDataByTime(time) {
 		var delta = 1;
+		var lowIndex = 0;
+		var highIndex = 100;
 		var midIndex = 0;
 		var item = null;
 		
-		for (var i = 0; i < subData.length; ++1) {
+		for (var i = 0; i < subData.length; ++i) {
 			if (delta < 0) {
-				midIndex = parseInt( (midIndex + 0) / 2 );
+				highIndex = midIndex;
+				midIndex = parseInt( (midIndex + lowIndex) / 2 );
 			} else {
-				midIndex = parseInt( (midIndex + subData.length) / 2 );
+				lowIndex = midIndex;
+				midIndex = parseInt( (midIndex + highIndex) / 2 );
 			}
 			
 			item = subData[midIndex];
-			// if (item.start < time && item.end > time) break;
 			
-			if (item.start > time) {
-				delta = -1;
-			} else {
-				if (item.end < time && item.end != 0) {
-					delta = 1;
+			if (item && item.start && item.end) {
+				if (item.start > time) {
+					delta = -1;
 				} else {
-					break;
+					if (item.end < time && item.end != 0) {
+						delta = 1;
+					} else {
+						break;
+					}
 				}
 			}
 		}

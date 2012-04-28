@@ -47,21 +47,25 @@ jQuery(function($) {
 		loadVideo(e.currentTarget.files[0]);
 	});
 	
-	gridText.find('tr').live('click', function(e) {
-		var tr = $(this);
-		
-		if (tr.data('dblclick')) {
-			e.preventDefault();
-			setCurrentLine(tr.index());
-			window.getSelection().removeAllRanges();
-			player[0].focus();
-		} else {
-			tr.data('dblclick', true);
-			setTimeout(function() {
-				tr.data('dblclick', false);
-			}, 200);
-		}
-	});
+	gridText
+		.find('tr').live('click', function(e) {
+			var tr = $(this);
+			
+			if (tr.data('dblclick')) {
+				e.preventDefault();
+				setCurrentLine(tr.index());
+				window.getSelection().removeAllRanges();
+				player[0].focus();
+			} else {
+				tr.data('dblclick', true);
+				setTimeout(function() {
+					tr.data('dblclick', false);
+				}, 200);
+			}
+		})
+		.find('td').live('blur', function(e) {
+			updateSubData($(e.currentTarget));
+		});
 	
 	$(document).keydown(function(e) {
 		if (!$(e.target).is('[contenteditable]')) {
@@ -159,51 +163,20 @@ jQuery(function($) {
 				subData = parseSubsAsPlain(text);
 			}
 			
+			var append = '';
+			
 			for (var i in subData) {
 				var sub = subData[i];
-				gridText.append('<tr><td class="text">' + sub.text + '</td><td class="start">' + formatTime(sub.start) + '</td><td class="end">' + formatTime(sub.end) + '</td></tr>');
-				setCurrentLine(0);
+				append += '<tr><td class="text" contenteditable="true">' + sub.text + '</td><td class="start" contenteditable="true">' + formatTime(sub.start) + '</td><td class="end" contenteditable="true">' + formatTime(sub.end) + '</td></tr>'
 			}
+			
+			gridText.html('').append(append);
+			setCurrentLine(0);
 		}
 		
 		reader.readAsText(file);
 	}
 	
-	function parseSubsAsPlain(text) {
-		var data = [];
-		var lines = text.split(/\n/);
-		
-		for (var line in lines) {
-			data.push({ start: 0, end: 0, text: lines[line] });
-		}
-		
-		return data;
-	}
-	
-	function parseSubsAsSRT(text) {
-		var data = [];
-		
-		var lines = text.match(/(\d+)[^\n]*\n(\d\d:\d\d:\d\d,\d\d\d)\s-->\s(\d\d:\d\d:\d\d,\d\d\d)[^\n]*\n(.*)/g);
-		if (lines && lines.length) {
-			for (var line in lines) {
-				var lineData = lines[line].match(/(\d+)[^\n]*\n(\d\d:\d\d:\d\d,\d\d\d)\s-->\s(\d\d:\d\d:\d\d,\d\d\d)[^\n]*\n(.*)/);
-				if (lineData && lineData.length) {
-					var item = {};
-					item.start = parseTime(lineData[2]);
-					item.end = parseTime(lineData[3]);
-					item.text = lineData[4];
-					
-					data.push(item);
-				}
-			}
-		}
-		
-		return data;
-	}
-	
-	function parseTime(timeString) {
-		return (3600*timeString.substr(0, 2)) + (60*timeString.substr(3, 2)) + (1*timeString.substr(6, 2)) + (0.001*timeString.substr(9, 3));
-	}
 	
 	function isPlaying() {
 		return !player[0].paused;
@@ -270,9 +243,11 @@ jQuery(function($) {
 			if (item && item.start && item.end) {
 				if (item.start > time) {
 					delta = -1;
+					item = null;
 				} else {
 					if (item.end < time && item.end != 0) {
 						delta = 1;
+						item = null;
 					} else {
 						break;
 					}
@@ -281,6 +256,23 @@ jQuery(function($) {
 		}
 		
 		return item;
+	}
+	
+	function updateSubData(item) {
+		var index = item.closest('tr').index();
+		var currentSub = subData[index];
+		
+		var prop = item.attr('class');
+		var val = item.text();
+		
+		switch (prop) {
+			case 'start':
+			case 'end':
+				val = parseTime(val);
+				break;
+		}
+		
+		if (typeof(currentSub[prop]) != 'undefined') currentSub[prop] = val;
 	}
 });
 
@@ -303,7 +295,9 @@ function formatTime(seconds) {
 	
 	var time = new Date(seconds * 1000);
 	var localTime = new Date(0);
-	var miliseconds = seconds.toString().match(/\.([\d]{3})/);
+	
+	seconds = seconds.toString() + '000';
+	var miliseconds = seconds.match(/\.([\d]{3})/);
 	if (typeof(miliseconds) != 'object' || !miliseconds || typeof(miliseconds[1]) == 'undefined') {
 		miliseconds = '000';
 	} else {
@@ -315,4 +309,40 @@ function formatTime(seconds) {
 
 function leadingZero(integer) {
 	return (integer < 10) ? ('0' + integer) : integer;
+}
+
+function parseSubsAsPlain(text) {
+	var data = [];
+	var lines = text.split(/\n/);
+	
+	for (var line in lines) {
+		data.push({ start: 0, end: 0, text: lines[line] });
+	}
+	
+	return data;
+}
+
+function parseSubsAsSRT(text) {
+	var data = [];
+	
+	var lines = text.match(/(\d+)[^\n]*\n(\d\d:\d\d:\d\d,\d\d\d)\s-->\s(\d\d:\d\d:\d\d,\d\d\d)[^\n]*\n(.*)/g);
+	if (lines && lines.length) {
+		for (var line in lines) {
+			var lineData = lines[line].match(/(\d+)[^\n]*\n(\d\d:\d\d:\d\d,\d\d\d)\s-->\s(\d\d:\d\d:\d\d,\d\d\d)[^\n]*\n(.*)/);
+			if (lineData && lineData.length) {
+				var item = {};
+				item.start = parseTime(lineData[2]);
+				item.end = parseTime(lineData[3]);
+				item.text = lineData[4];
+				
+				data.push(item);
+			}
+		}
+	}
+	
+	return data;
+}
+
+function parseTime(timeString) {
+	return (3600*timeString.substr(0, 2)) + (60*timeString.substr(3, 2)) + (1*timeString.substr(6, 2)) + (0.001*timeString.substr(9, 3));
 }

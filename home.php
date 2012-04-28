@@ -25,7 +25,7 @@ http://www.htmlfivewow.com/
 					<th class="time">End Time</th>
 				</tr>
 			</thead>
-			<tbody contenteditable="true">
+			<tbody>
 			</tbody>
 		</table>
 	</div>

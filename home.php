@@ -1,3 +1,14 @@
+<?php
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+	header('Content-Type: application/octet-stream');
+	header('Content-Disposition: attachment; filename=' . preg_replace('/\.[^\.]+$/', '.srt', $_POST['fileName']));
+	
+	$output = preg_replace('~<br[\s]?/>~ium', "\n\r", iconv('UTF-8', 'UTF-16LE', $_POST['subData']));
+	echo chr(255).chr(254).$output;
+	exit;
+}
+
+?>
 <!DOCTYPE html>
 <!--
 http://www.w3.org/TR/2011/WD-html5-20110113/video.html
@@ -41,6 +52,8 @@ http://www.htmlfivewow.com/
 			<input type="file" id="subtitlesFile" class="text" name="subtitles_file" />
 			<input type="file" id="videoFile" class="video" name="video_file" />
 			
+			<input type="hidden" id="subData" name="subData" value="" />
+			<input type="hidden" id="fileName" name="fileName" value="" />
 			<input type="submit" class="button" value="Save SRT" />
 		</div>
 	</form>

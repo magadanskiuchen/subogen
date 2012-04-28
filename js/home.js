@@ -88,7 +88,7 @@ jQuery(function($) {
 	});
 	
 	controls.submit(function() {
-		return false;
+		$(this).find('#subData').val(generateSRT(subData)).val();
 	});
 	
 	controls.find('.start').click(function(e) {
@@ -149,6 +149,7 @@ jQuery(function($) {
 	}
 	
 	function loadVideo(file) {
+		controls.find('#fileName').val(file.name);
 		player[0].src = createObjectURL(file);
 	}
 	
@@ -223,10 +224,10 @@ jQuery(function($) {
 	}
 	
 	function getSubDataByTime(time) {
-		var delta = 1;
+		var delta = -1;
 		var lowIndex = 0;
-		var highIndex = 100;
-		var midIndex = 0;
+		var highIndex = subData.length;
+		var midIndex = parseInt(subData.length / 2);
 		var item = null;
 		
 		for (var i = 0; i < subData.length; ++i) {
@@ -241,11 +242,11 @@ jQuery(function($) {
 			item = subData[midIndex];
 			
 			if (item && item.start && item.end) {
-				if (item.start > time) {
+				if (item.start > time || item.end == 0) {
 					delta = -1;
 					item = null;
 				} else {
-					if (item.end < time && item.end != 0) {
+					if (item.end < time) {
 						delta = 1;
 						item = null;
 					} else {
@@ -345,4 +346,16 @@ function parseSubsAsSRT(text) {
 
 function parseTime(timeString) {
 	return (3600*timeString.substr(0, 2)) + (60*timeString.substr(3, 2)) + (1*timeString.substr(6, 2)) + (0.001*timeString.substr(9, 3));
+}
+
+function generateSRT(subData) {
+	var srt = '';
+	var i = 0;
+	
+	for (var j in subData) {
+		var item = subData[j];
+		srt += ++i + '\n' + formatTime(item.start) + ' --> ' + formatTime(item.end) + '\n' + item.text + '\n\n';
+	}
+	
+	return srt;
 }

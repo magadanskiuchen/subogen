@@ -114,9 +114,9 @@ jQuery(function($) {
 		var subDataItem = getSubDataByTime(time);
 		
 		if (subDataItem && typeof(subDataItem.start) != 'undefined' && subDataItem.start < subDataItem.end) {
-			preview.text(subDataItem.text);
+			preview.html(subDataItem.text.replace(/\n/, '<br />'));
 		} else {
-			preview.text('');
+			preview.html('');
 		}
 	}, false);
 	
@@ -145,7 +145,7 @@ jQuery(function($) {
 	
 	function renderPreview() {
 		var VIDEO_CONTROLS_HEIGHT = 35;
-		preview.css({ top: player.height() - preview.outerHeight() - VIDEO_CONTROLS_HEIGHT + 'px' });
+		preview.css({ bottom: grid.height() + controls.height() + VIDEO_CONTROLS_HEIGHT + 'px' });
 	}
 	
 	function loadVideo(file) {
@@ -231,14 +231,6 @@ jQuery(function($) {
 		var item = null;
 		
 		for (var i = 0; i < subData.length; ++i) {
-			if (delta < 0) {
-				highIndex = midIndex;
-				midIndex = parseInt( (midIndex + lowIndex) / 2 );
-			} else {
-				lowIndex = midIndex;
-				midIndex = parseInt( (midIndex + highIndex) / 2 );
-			}
-			
 			item = subData[midIndex];
 			
 			if (item && item.start && item.end) {
@@ -254,6 +246,14 @@ jQuery(function($) {
 					}
 				}
 			}
+			
+			if (delta < 0) {
+				highIndex = midIndex;
+				midIndex = parseInt( (midIndex + lowIndex) / 2 );
+			} else {
+				lowIndex = midIndex;
+				midIndex = parseInt( (midIndex + highIndex) / 2 );
+			}
 		}
 		
 		return item;
@@ -264,7 +264,7 @@ jQuery(function($) {
 		var currentSub = subData[index];
 		
 		var prop = item.attr('class');
-		var val = item.text();
+		var val = item.html().replace(/<br\s?\/?>/, '\n');
 		
 		switch (prop) {
 			case 'start':

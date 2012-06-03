@@ -10,6 +10,12 @@ input.button { height: 24px; line-height: 24px; }
 
 #videoPlayer { width: 100%; background: #000; outline: none; }
 #videoPlayer.droptarget { background: #FFF; }
+#videoPlayer:-webkit-full-screen,
+#videoPlayer:full-screen { position: static; z-index: 99999; top: 0; left: 0; bottom: 0; right: 0; width: auto !important; height: auto !important; background: red; }
+
+a.exit-fullscreen { visibility: hidden; position: absolute; top: 5px; right: 5px; display: inline; float: left; width: 24px; height: 24px; background: #FFF; }
+#videoPlayer:-webkit-full-screen + a.exit-fullscreen,
+#videoPlayer:full-screen + a.exit-fullscreen { visibility: visible; }
 
 .sub-preview { width: 70%; position: absolute; left: 15%; padding: 4px 0; font-size: 22px; color: #FFF; text-shadow: -2px 0 #000, -2px 2px #000, 0 2px #000, 2px 2px #000, 2px 0 #000, 2px -2px #000, 0 -2px #000, -2px -2px #000; text-align: center; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; -o-user-select: none; user-select: none; cursor: default; }
 

@@ -47,6 +47,18 @@ jQuery(function($) {
 		loadVideo(e.currentTarget.files[0]);
 	});
 	
+	player.click(function (e) {
+		if (player.data('dblclick') === true) {
+			e.preventDefault();
+			toggleFullscreen();
+		} else {
+			player.data('dblclick', true);
+			setTimeout(function () {
+				player.data('dblclick', false);
+			}, 200);
+		}
+	});
+	
 	gridText
 		.find('tr').live('click', function(e) {
 			var tr = $(this);
@@ -275,6 +287,20 @@ jQuery(function($) {
 		
 		if (typeof(currentSub[prop]) != 'undefined') currentSub[prop] = val;
 	}
+	
+	function toggleFullscreen() {
+		if (!player.data('fullScreen')) {
+			// enter fullscreen
+			
+			player.data('fullScreen', true);
+			// requestFullScreen(player[0]);
+		} else {
+			// exit fullscreen
+			
+			player.data('fullScreen', false);
+			// exitFullScreen();
+		}
+	}
 });
 
 function createObjectURL(file) {
@@ -289,6 +315,27 @@ function createObjectURL(file) {
 	}
 	
 	return output;
+}
+
+function requestFullScreen(element) {
+	// Supports most browsers and their versions.
+	var requestMethod = element.requestFullScreen || element.webkitRequestFullScreen || element.mozRequestFullScreen || element.msRequestFullScreen;
+	
+	if (requestMethod) { // Native full screen.
+		requestMethod.call(element);
+	}
+}
+
+function exitFullScreen() {
+	if (document.exitFullscreen) {
+		document.exitFullscreen();
+	} else if (document.webkitExitFullscreen) {
+		document.webkitExitFullscreen();
+	} else if (document.mozExitFullscreen) {
+		document.mozExitFullscreen();
+	} else if (document.msExitFullscreen) {
+		document.msExitFullscreen();
+	}
 }
 
 function formatTime(seconds) {

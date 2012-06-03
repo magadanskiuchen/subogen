@@ -25,6 +25,7 @@ http://www.htmlfivewow.com/
 </head>
 <body>
 	<video id="videoPlayer" controls="controls"></video>
+	<a href="#" class="exit-fullscreen" title="Exit Full Screen"></a>
 	<p class="sub-preview"></p>
 	
 	<div id="grid">

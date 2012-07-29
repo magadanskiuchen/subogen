@@ -1,5 +1,6 @@
 jQuery(function ($) {
-	var player = new Player($('#player'));
+	var player = new com.magadanski.Player(document.getElementById('player'));
+	var subData = new com.magadanski.SubData();
 	
 	var loadVideoButton = $('#load-video');
 	var loadSubtitlesButton = $('#load-subtitles');
@@ -21,32 +22,17 @@ jQuery(function ($) {
 	});	
 	
 	loadSubtitlesButton.change(function(e) {
-		// loadSubs(e.currentTarget.files[0]);
+		var fileContent = loadFileContent(e.currentTarget.files[0]);
+		subData.loadSubs(fileContent);
 	});
 });
 
-// class to handle the player functionality
-function Player(p) {
-	var that = this;
+function loadFileContent(file) {
+	var reader = new FileReader(file);
 	
-	this.load = function (file) {
-		if (p[0].canPlayType(file.type)) {
-			p[0].src = createObjectURL(file);
-		}
-	}
-}
-
-// shiv for window.URL.createObjectURL
-function createObjectURL(file) {
-	var output = '';
-	
-	if (window.URL) {
-		output = window.URL.createObjectURL(file);
-	} else if (window.webkitURL) {
-		output = window.webkitURL.createObjectURL(file);
-	} else if (window.mozURL) {
-		output = window.mozURL.createObjectURL(file);
+	reader.onloadend = function(e) {
+		return this.result;
 	}
 	
-	return output;
+	reader.readAsText(file);
 }

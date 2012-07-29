@@ -40,9 +40,9 @@
 	<table>
 		<thead>
 			<tr>
-				<th>Subtitle</th>
-				<th class="time">Start Time</th>
-				<th class="time">End Time</th>
+				<th><?php echo __('Subtitle'); ?></th>
+				<th class="time"><?php echo __('Start Time'); ?></th>
+				<th class="time"><?php echo __('End Time'); ?></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -50,8 +50,5 @@
 	</table>
 </div>
 
-<script type="text/javascript">
-window.home = '<?php echo $_SERVER['REQUEST_URI']; ?>';
-</script>
 </body>
 </html>

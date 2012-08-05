@@ -1,4 +1,4 @@
-<?php require_once(dirname(__FILE___) . '/functions.php'); ?>
+<?php require_once(dirname(__FILE__) . '/functions.php'); ?>
 <!DOCTYPE html>
 <html>
 <head>

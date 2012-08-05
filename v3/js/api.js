@@ -125,7 +125,7 @@ com.magadanski.SubData = function (text) {
 	if (typeof(text) != 'undefined') this.loadSubs(text);
 }
 
-// shiv for window.URL.createObjectURL
+// shim for window.URL.createObjectURL
 com.magadanski.utils.createObjectURL = function(file) {
 	var output = '';
 	

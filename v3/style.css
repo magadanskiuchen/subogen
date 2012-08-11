@@ -34,6 +34,15 @@ input[type="file"].button { opacity: 0; }
 #grid th,
 #grid td { height: 16px; border: 1px solid #CCC; padding: 3px 6px; }
 
+#playerDropTarget,
+#subDropTarget { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); }
+
+#playerDropTarget p,
+#subDropTarget p { display: inline-block; position: absolute; top: 50%; left: 50%; width: 300px; height: 85px; margin: -42px 0 0 -150px; background: #FFF; border-radius: 7px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.5); font: bold 24px/85px Arial, Helvetica, sans-serif; text-align: center; }
+
+body.dropTarget #playerDropTarget,
+body.dropTarget #subDropTarget { display: block; }
+
 #_STP_slsdiv { display: none; }
 
 @media only screen and (-webkit-min-device-pixel-ratio: 1.5), only screen and (min--moz-device-pixel-ratio: 1.5), only screen and (min-resolution: 240dpi) {

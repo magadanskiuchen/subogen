@@ -1,27 +1,44 @@
-jQuery(function ($) {
+document.addEventListener('DOMContentLoaded', function (e) {
+	var mu = com.magadanski.utils;
+	
 	var player = new com.magadanski.Player(document.getElementById('player'));
 	var subData = new com.magadanski.SubData();
 	
-	var loadVideoButton = $('#load-video');
-	var loadSubtitlesButton = $('#load-subtitles');
+	var loadVideoButton = document.getElementById('load-video');
+	var loadSubtitlesButton = document.getElementById('load-subtitles');
 	
-	var setStartButton = $('#set-start');
-	var setStopButton = $('#set-stop');
-	var setStopStartButton = $('#set-stop-start');
+	var setStartButton = document.getElementById('set-start');
+	var setStopButton = document.getElementById('set-stop');
+	var setStopStartButton = document.getElementById('set-stop-start');
 	
-	var saveToYouTubeButton = $('#save-to-youtube');
-	var loadVideoFromYouTubeButton = $('#load-video-from-youtube');
+	var saveToYouTubeButton = document.getElementById('save-to-youtube');
+	var loadVideoFromYouTubeButton = document.getElementById('load-video-from-youtube');
 	
-	var changeFontButton = $('#change-font');
-	var helpButton = $('#help');
+	var changeFontButton = document.getElementById('change-font');
+	var helpButton = document.getElementById('help');
 	
-	loadVideoButton.change(function(e) {
+	loadVideoButton.addEventListener('change', function (e) {
 		if (typeof(e.currentTarget.files) != 'undefined') {
 			player.load(e.currentTarget.files[0]);
 		}
-	});	
+	});
 	
-	loadSubtitlesButton.change(function(e) {
+	window.addEventListener('drop', function (e) {
+		e.preventDefault();
+		mu.removeClass(document.body, 'dropTarget');
+		
+		var file = e.dataTransfer.files[0];
+	});
+	
+	window.addEventListener('dragenter', function (e) {
+		mu.addClass(document.body, 'dropTarget');
+	});
+	
+	window.addEventListener('dragleave', function (e) {
+		if (!e.pageX) mu.removeClass(document.body, 'dropTarget');
+	});
+	
+	loadSubtitlesButton.addEventListener('change', function (e) {
 		loadFileContent(e.currentTarget.files[0], function (e, fileContent) {
 			subData.loadSubs(fileContent);
 		});

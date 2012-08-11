@@ -6,7 +6,7 @@ com.magadanski.utils = (typeof(com.magadanski.utils) != 'undefined') ? com.magad
 com.magadanski.Player = function (p) {
 	var that = this;
 	
-	that.p = p;
+	this.p = p;
 	
 	this.load = function (file) {
 		if (p.canPlayType(file.type)) {
@@ -18,8 +18,8 @@ com.magadanski.Player = function (p) {
 com.magadanski.parsers.SubParser = function () {
 	var that = this;
 	
-	that.syntax = '';
-	that.priority = 0;
+	this.syntax = '';
+	this.priority = 0;
 }
 
 com.magadanski.parsers.SubParser.prototype.test = function (text) {
@@ -33,7 +33,7 @@ com.magadanski.parsers.SubParser.prototype.parse = function (text) {
 com.magadanski.parsers.SubTextParser = function () {
 	var that = this;
 	
-	that.priority = -1;
+	this.priority = -1;
 }
 
 com.magadanski.parsers.SubTextParser.prototype = new com.magadanski.parsers.SubParser();
@@ -58,8 +58,8 @@ com.magadanski.parsers.SubTextParser.prototype.parse = function (text) {
 com.magadanski.parsers.SubRipParser = function () {
 	var that = this;
 	
-	that.syntax = /(\d+)[^\n]*\n(\d\d:\d\d:\d\d,\d\d\d)\s-->\s(\d\d:\d\d:\d\d,\d\d\d)[^\n]*\n(.*)/g;
-	that.itemSyntax = /(\d+)[^\n]*\n(\d\d:\d\d:\d\d,\d\d\d)\s-->\s(\d\d:\d\d:\d\d,\d\d\d)[^\n]*\n(.*)/;
+	this.syntax = /(\d+)[^\n]*\n(\d\d:\d\d:\d\d,\d\d\d)\s-->\s(\d\d:\d\d:\d\d,\d\d\d)[^\n]*\n(.*)/g;
+	this.itemSyntax = /(\d+)[^\n]*\n(\d\d:\d\d:\d\d,\d\d\d)\s-->\s(\d\d:\d\d:\d\d,\d\d\d)[^\n]*\n(.*)/;
 }
 
 com.magadanski.parsers.SubRipParser.prototype = new com.magadanski.parsers.SubParser();
@@ -181,7 +181,7 @@ com.magadanski.SubData = function (text) {
 		this.data = parser.parse(text);
 	}
 	
-	if (typeof(text) != 'undefined') that.loadSubs(text);
+	if (typeof(text) != 'undefined') this.loadSubs(text);
 }
 
 // shim for window.URL.createObjectURL
@@ -197,4 +197,16 @@ com.magadanski.utils.createObjectURL = function(file) {
 	}
 	
 	return output;
+}
+
+com.magadanski.utils.addClass = function (element, className) {
+	if (typeof(element.className) != 'undefined') {
+		if (!element.className.match(className)) element.className += ' ' + className;
+	}
+}
+
+com.magadanski.utils.removeClass = function (element, className) {
+	if (typeof(element.className) != 'undefined') {
+		element.className = element.className.replace(className, '');
+	}
 }

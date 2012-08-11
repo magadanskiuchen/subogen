@@ -9,7 +9,6 @@
 	
 	<link rel="stylesheet" type="text/css" href="style.css" />
 	
-	<script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
 	<script type="text/javascript" src="js/api.js"></script>
 	<script type="text/javascript" src="js/func.js"></script>
 </head>
@@ -34,6 +33,10 @@
 		<input type="file" id="load-video" class="button" name="load_video" />
 		<input type="file" id="load-subtitles" class="button" name="load_subtitles" />
 	</form>
+	
+	<div id="playerDropTarget">
+		<p><span><?php echo __('Drop Video Here'); ?></span></p>
+	</div>
 </div>
 
 <div id="grid">
@@ -48,6 +51,10 @@
 		<tbody>
 		</tbody>
 	</table>
+	
+	<div id="subDropTarget">
+		<p><span><?php echo __('Drop Subtitles Here'); ?></span></p>
+	</div>
 </div>
 
 </body>

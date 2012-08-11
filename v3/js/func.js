@@ -22,16 +22,19 @@ jQuery(function ($) {
 	});	
 	
 	loadSubtitlesButton.change(function(e) {
-		var fileContent = loadFileContent(e.currentTarget.files[0]);
-		subData.loadSubs(fileContent);
+		loadFileContent(e.currentTarget.files[0], function (e, fileContent) {
+			subData.loadSubs(fileContent);
+		});
 	});
 });
 
-function loadFileContent(file) {
+function loadFileContent(file, callback) {
 	var reader = new FileReader(file);
 	
 	reader.onloadend = function(e) {
-		return this.result;
+		if (typeof(callback) == 'function') {
+			callback(e, this.result);
+		}
 	}
 	
 	reader.readAsText(file);

@@ -1,11 +1,12 @@
 com = (typeof(com) != 'undefined') ? com : {};
 com.magadanski = (typeof(com.magadanski) != 'undefined') ? com.magadanski : {};
+com.magadanski.parsers = (typeof(com.magadanski.parsers) != 'undefined') ? com.magadanski.parsers : {};
 com.magadanski.utils = (typeof(com.magadanski.utils) != 'undefined') ? com.magadanski.utils : {};
 
 com.magadanski.Player = function (p) {
 	var that = this;
 	
-	this.p = p;
+	that.p = p;
 	
 	this.load = function (file) {
 		if (p.canPlayType(file.type)) {
@@ -14,14 +15,36 @@ com.magadanski.Player = function (p) {
 	}
 }
 
-com.magadanski.SubParser = function () {
+com.magadanski.parsers.SubParser = function () {
 	var that = this;
 	
-	this.srtSyntax = /(\d+)[^\n]*\n(\d\d:\d\d:\d\d,\d\d\d)\s-->\s(\d\d:\d\d:\d\d,\d\d\d)[^\n]*\n(.*)/g;
-	this.srtItemSyntax = /(\d+)[^\n]*\n(\d\d:\d\d:\d\d,\d\d\d)\s-->\s(\d\d:\d\d:\d\d,\d\d\d)[^\n]*\n(.*)/;
+	that.syntax = '';
+	that.priority = 0;
 }
 
-com.magadanski.SubParser.prototype.parseText = function (text) {
+com.magadanski.parsers.SubParser.prototype.test = function (text) {
+	return false;
+}
+
+com.magadanski.parsers.SubParser.prototype.parse = function (text) {
+	return false;
+}
+
+com.magadanski.parsers.SubTextParser = function () {
+	var that = this;
+	
+	that.priority = -1;
+}
+
+com.magadanski.parsers.SubTextParser.prototype = new com.magadanski.parsers.SubParser();
+com.magadanski.parsers.SubTextParser.prototype.constructor = com.magadanski.parsers.SubTextParser;
+com.magadanski.parsers.SubTextParser.prototype.parent = com.magadanski.parsers.SubParser.prototype;
+
+com.magadanski.parsers.SubTextParser.prototype.test = function (text) {
+	return true;
+}
+
+com.magadanski.parsers.SubTextParser.prototype.parse = function (text) {
 	var data = [];
 	var lines = text.split(/\n/);
 	
@@ -32,17 +55,36 @@ com.magadanski.SubParser.prototype.parseText = function (text) {
 	return data;
 }
 
-com.magadanski.SubParser.prototype.parseSRT = function(text) {
+com.magadanski.parsers.SubRipParser = function () {
+	var that = this;
+	
+	that.syntax = /(\d+)[^\n]*\n(\d\d:\d\d:\d\d,\d\d\d)\s-->\s(\d\d:\d\d:\d\d,\d\d\d)[^\n]*\n(.*)/g;
+	that.itemSyntax = /(\d+)[^\n]*\n(\d\d:\d\d:\d\d,\d\d\d)\s-->\s(\d\d:\d\d:\d\d,\d\d\d)[^\n]*\n(.*)/;
+}
+
+com.magadanski.parsers.SubRipParser.prototype = new com.magadanski.parsers.SubParser();
+com.magadanski.parsers.SubRipParser.prototype.constructor = com.magadanski.parsers.SubRipParser;
+com.magadanski.parsers.SubRipParser.prototype.parent = com.magadanski.parsers.SubParser.prototype;
+
+com.magadanski.parsers.SubRipParser.prototype.test = function (text) {
+	return this.syntax.test(text);
+}
+
+com.magadanski.parsers.SubRipParser.prototype.parseTime = function (timeString) {
+	return (3600*timeString.substr(0, 2)) + (60*timeString.substr(3, 2)) + (1*timeString.substr(6, 2)) + (0.001*timeString.substr(9, 3));
+}
+
+com.magadanski.parsers.SubRipParser.prototype.parse = function (text) {
 	var data = [];
 	
-	var lines = text.match(this.srtSyntax);
+	var lines = text.match(this.syntax);
 	if (lines && lines.length) {
 		for (var line in lines) {
-			var lineData = lines[line].match(this.srtItemSyntax);
+			var lineData = lines[line].match(this.itemSyntax);
 			if (lineData && lineData.length) {
 				var item = {};
-				item.start = parseTime(lineData[2]);
-				item.end = parseTime(lineData[3]);
+				item.start = this.parseTime(lineData[2]);
+				item.end = this.parseTime(lineData[3]);
 				item.text = lineData[4];
 				
 				data.push(item);
@@ -53,17 +95,33 @@ com.magadanski.SubParser.prototype.parseSRT = function(text) {
 	return data;
 }
 
-com.magadanski.SubParser.prototype.parseAuto = function(text) {
-	var data = [];
+com.magadanski.parsers.SubAutoParser = function (text) {
+	var that = this;
 	
-	if (this.srtItemSyntax.test(text)) {
-		data = this.parseSRT(text);
-	} else {
-		data = this.parseText(text);
+	if (typeof(text) != 'string') return false;
+	
+	var parsers = [];
+	
+	for (var parser in com.magadanski.parsers) {
+		if (parser != 'SubAutoParser') parsers.push(new com.magadanski.parsers[parser]);
 	}
 	
-	return data;
+	parsers.sort(function (a, b) {
+		return b.priority - a.priority;
+	});
+	
+	var parser = null;
+	for (var p in parsers) {
+		parser = parsers[p];
+		if (parser.test(text)) {
+			return parser;
+		}
+	}
 }
+
+com.magadanski.parsers.SubAutoParser.prototype = new com.magadanski.parsers.SubParser();
+com.magadanski.parsers.SubAutoParser.prototype.constructor = com.magadanski.parsers.SubAutoParser;
+com.magadanski.parsers.SubAutoParser.prototype.parent = com.magadanski.parsers.SubParser.prototype;
 
 com.magadanski.SubData = function (text) {
 	var that = this;
@@ -119,10 +177,11 @@ com.magadanski.SubData = function (text) {
 	}
 	
 	this.loadSubs = function (text) {
-		this.data = com.magadanski.SubParser.parseAuto(text);
+		var parser = new com.magadanski.parsers.SubAutoParser(text);
+		this.data = parser.parse(text);
 	}
 	
-	if (typeof(text) != 'undefined') this.loadSubs(text);
+	if (typeof(text) != 'undefined') that.loadSubs(text);
 }
 
 // shim for window.URL.createObjectURL

@@ -34,7 +34,7 @@
 		<input type="file" id="load-subtitles" class="button" name="load_subtitles" />
 	</form>
 	
-	<div id="playerDropTarget">
+	<div id="player-drop-target">
 		<p><span><?php echo __('Drop Video Here'); ?></span></p>
 	</div>
 </div>
@@ -52,7 +52,7 @@
 		</tbody>
 	</table>
 	
-	<div id="subDropTarget">
+	<div id="sub-drop-target">
 		<p><span><?php echo __('Drop Subtitles Here'); ?></span></p>
 	</div>
 </div>

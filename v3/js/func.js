@@ -1,34 +1,24 @@
 document.addEventListener('DOMContentLoaded', function (e) {
-	var mu = com.magadanski.utils;
+	mu = com.magadanski.utils;
 	
-	var player = new com.magadanski.Player(document.getElementById('player'));
-	var subData = new com.magadanski.SubData();
+	player = new com.magadanski.Player(document.getElementById('player'));
+	subData = new com.magadanski.SubData();
 	
-	var loadVideoButton = document.getElementById('load-video');
-	var loadSubtitlesButton = document.getElementById('load-subtitles');
+	loadVideoButton = document.getElementById('load-video');
+	loadSubtitlesButton = document.getElementById('load-subtitles');
 	
-	var setStartButton = document.getElementById('set-start');
-	var setStopButton = document.getElementById('set-stop');
-	var setStopStartButton = document.getElementById('set-stop-start');
+	playerDropTarget = document.getElementById('player-drop-target');
+	subDropTarget = document.getElementById('sub-drop-target');
 	
-	var saveToYouTubeButton = document.getElementById('save-to-youtube');
-	var loadVideoFromYouTubeButton = document.getElementById('load-video-from-youtube');
+	setStartButton = document.getElementById('set-start');
+	setStopButton = document.getElementById('set-stop');
+	setStopStartButton = document.getElementById('set-stop-start');
 	
-	var changeFontButton = document.getElementById('change-font');
-	var helpButton = document.getElementById('help');
+	saveToYouTubeButton = document.getElementById('save-to-youtube');
+	loadVideoFromYouTubeButton = document.getElementById('load-video-from-youtube');
 	
-	loadVideoButton.addEventListener('change', function (e) {
-		if (typeof(e.currentTarget.files) != 'undefined') {
-			player.load(e.currentTarget.files[0]);
-		}
-	});
-	
-	window.addEventListener('drop', function (e) {
-		e.preventDefault();
-		mu.removeClass(document.body, 'dropTarget');
-		
-		var file = e.dataTransfer.files[0];
-	});
+	changeFontButton = document.getElementById('change-font');
+	helpButton = document.getElementById('help');
 	
 	window.addEventListener('dragenter', function (e) {
 		mu.addClass(document.body, 'dropTarget');
@@ -38,11 +28,38 @@ document.addEventListener('DOMContentLoaded', function (e) {
 		if (!e.pageX) mu.removeClass(document.body, 'dropTarget');
 	});
 	
-	loadSubtitlesButton.addEventListener('change', function (e) {
-		loadFileContent(e.currentTarget.files[0], function (e, fileContent) {
-			subData.loadSubs(fileContent);
-		});
+	window.addEventListener('drop', function (e) {
+		e.preventDefault();
+		mu.removeClass(document.body, 'dropTarget');
 	});
+	
+	loadVideoButton.addEventListener('change', function (e) {
+		if (typeof(e.currentTarget.files) != 'undefined') {
+			player.load(e.currentTarget.files[0]);
+		}
+	});
+	
+	playerDropTarget.addEventListener('drop', function (e) {
+		if (typeof(e.dataTransfer.files) != 'undefined') {
+			player.load(e.dataTransfer.files[0]);
+		}
+	});
+	
+	loadSubtitlesButton.addEventListener('change', function (e) {
+		if (typeof(e.currentTarget.files) != 'undefined') {
+			loadFileContent(e.currentTarget.files[0], onSubFileLoaded);
+		}
+	});
+	
+	subDropTarget.addEventListener('drop', function (e) {
+		if (typeof(e.dataTransfer.files) != 'undefined') {
+			loadFileContent(e.dataTransfer.files[0], onSubFileLoaded);
+		}
+	});
+	
+	function onSubFileLoaded(e, fileContent) {
+		subData.loadSubs(fileContent);
+	}
 });
 
 function loadFileContent(file, callback) {

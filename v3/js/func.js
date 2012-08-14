@@ -1,6 +1,21 @@
+window.addEventListener('dragenter', function (e) {
+	com.magadanski.utils.addClass(document.body, 'dropTarget');
+});
+
+window.addEventListener('dragleave', function (e) {
+	if (!e.pageX) com.magadanski.utils.removeClass(document.body, 'dropTarget');
+});
+
+window.addEventListener('dragover', function (e) {
+	e.preventDefault();
+});
+
+window.addEventListener('drop', function (e) {
+	e.preventDefault();
+	com.magadanski.utils.removeClass(document.body, 'dropTarget');
+}, true);
+
 document.addEventListener('DOMContentLoaded', function (e) {
-	mu = com.magadanski.utils;
-	
 	player = new com.magadanski.Player(document.getElementById('player'));
 	subData = new com.magadanski.SubData();
 	
@@ -19,19 +34,6 @@ document.addEventListener('DOMContentLoaded', function (e) {
 	
 	changeFontButton = document.getElementById('change-font');
 	helpButton = document.getElementById('help');
-	
-	window.addEventListener('dragenter', function (e) {
-		mu.addClass(document.body, 'dropTarget');
-	});
-	
-	window.addEventListener('dragleave', function (e) {
-		if (!e.pageX) mu.removeClass(document.body, 'dropTarget');
-	});
-	
-	window.addEventListener('drop', function (e) {
-		e.preventDefault();
-		mu.removeClass(document.body, 'dropTarget');
-	});
 	
 	loadVideoButton.addEventListener('change', function (e) {
 		if (typeof(e.currentTarget.files) != 'undefined') {
@@ -63,13 +65,21 @@ document.addEventListener('DOMContentLoaded', function (e) {
 });
 
 function loadFileContent(file, callback) {
-	var reader = new FileReader(file);
-	
-	reader.onloadend = function(e) {
-		if (typeof(callback) == 'function') {
-			callback(e, this.result);
+	if (window.FileReader) {
+		// TODO: make sure file can be read as text without browser crash
+		// http://stackoverflow.com/questions/9265139/html5-filereader-api-crashes-chrome-17-when-reading-large-file-as-slice
+		var reader = new FileReader(file);
+		
+		reader.onloadend = function(e) {
+			console.log(file, e, this);
+			return;
+			if (typeof(callback) == 'function') {
+				callback(e, this.result);
+			}
 		}
+		
+		reader.readAsText(file);
+	} else {
+		alert('Your browser does not support HTML5 File System access');
 	}
-	
-	reader.readAsText(file);
 }

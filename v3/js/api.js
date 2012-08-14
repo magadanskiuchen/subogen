@@ -111,12 +111,15 @@ com.magadanski.parsers.SubAutoParser = function (text) {
 	});
 	
 	var parser = null;
+	
 	for (var p in parsers) {
 		parser = parsers[p];
 		if (parser.test(text)) {
-			return parser;
+			break;
 		}
 	}
+	
+	return parser;
 }
 
 com.magadanski.parsers.SubAutoParser.prototype = new com.magadanski.parsers.SubParser();

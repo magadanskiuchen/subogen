@@ -66,19 +66,34 @@ document.addEventListener('DOMContentLoaded', function (e) {
 
 function loadFileContent(file, callback) {
 	if (window.FileReader) {
-		// TODO: make sure file can be read as text without browser crash
-		// http://stackoverflow.com/questions/9265139/html5-filereader-api-crashes-chrome-17-when-reading-large-file-as-slice
+		var chunkSize = 2097152; // 2MB
+		var startByte = 0;
+		var endByte = 0;
 		var reader = new FileReader(file);
+		var fileContent = null;
+		var fileSlice = file.slice || file.webkitSlice || file.mozSlice;
+		
+		function readChunk() {
+			endByte = Math.min(startByte + chunkSize, file.size);
+			reader.readAsText( fileSlice.call(file, startByte, endByte) );
+		}
 		
 		reader.onloadend = function(e) {
-			console.log(file, e, this);
-			return;
-			if (typeof(callback) == 'function') {
-				callback(e, this.result);
+			if (e.target.readyState == FileReader.DONE) {
+				fileContent = new Blob([fileContent, e.target.result], { type: 'text/plain; charset=UTF-8', endings: 'native' });
+				
+				if (endByte < file.size) {
+					startByte += chunkSize;
+					readChunk();
+				} else {
+					if (typeof(callback) == 'function') {
+						callback(e, this.result);
+					}
+				}
 			}
 		}
 		
-		reader.readAsText(file);
+		readChunk();
 	} else {
 		alert('Your browser does not support HTML5 File System access');
 	}

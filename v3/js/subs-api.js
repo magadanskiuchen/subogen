@@ -1,16 +1,21 @@
 com = (typeof(com) != 'undefined') ? com : {};
 com.magadanski = (typeof(com.magadanski) != 'undefined') ? com.magadanski : {};
 com.magadanski.parsers = (typeof(com.magadanski.parsers) != 'undefined') ? com.magadanski.parsers : {};
-com.magadanski.utils = (typeof(com.magadanski.utils) != 'undefined') ? com.magadanski.utils : {};
 
 com.magadanski.Player = function (p) {
 	var that = this;
 	
+	if (typeof(p) == 'undefined') p = null;
+	
 	this.p = p;
 	
 	this.load = function (file) {
-		if (p.canPlayType(file.type)) {
-			p.src = com.magadanski.utils.createObjectURL(file);
+		if (file instanceof File) {
+			if (p.canPlayType(file.type)) {
+				p.src = com.magadanski.utils.createObjectURL(file);
+			}
+		} else {
+			throw new com.magadanski.exceptions.TypeException('Player.load requires first argument to be File, ' + file.prototype + ' passed.');
 		}
 	}
 }
@@ -185,31 +190,4 @@ com.magadanski.SubData = function (text) {
 	}
 	
 	if (typeof(text) != 'undefined') this.loadSubs(text);
-}
-
-// shim for window.URL.createObjectURL
-com.magadanski.utils.createObjectURL = function(file) {
-	var output = '';
-	
-	if (window.URL) {
-		output = window.URL.createObjectURL(file);
-	} else if (window.webkitURL) {
-		output = window.webkitURL.createObjectURL(file);
-	} else if (window.mozURL) {
-		output = window.mozURL.createObjectURL(file);
-	}
-	
-	return output;
-}
-
-com.magadanski.utils.addClass = function (element, className) {
-	if (typeof(element.className) != 'undefined') {
-		if (!element.className.match(className)) element.className += ' ' + className;
-	}
-}
-
-com.magadanski.utils.removeClass = function (element, className) {
-	if (typeof(element.className) != 'undefined') {
-		element.className = element.className.replace(className, '');
-	}
 }

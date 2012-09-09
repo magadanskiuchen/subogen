@@ -1,100 +1,98 @@
-window.addEventListener('dragenter', function (e) {
-	com.magadanski.utils.addClass(document.body, 'dropTarget');
-});
+com = (typeof(com) != 'undefined') ? com : {};
+com.magadanski = (typeof(com.magadanski) != 'undefined') ? com.magadanski : {};
 
-window.addEventListener('dragleave', function (e) {
-	if (!e.pageX) com.magadanski.utils.removeClass(document.body, 'dropTarget');
-});
+com.magadanski.Subogen = null;
 
-window.addEventListener('dragover', function (e) {
-	e.preventDefault();
-});
-
-window.addEventListener('drop', function (e) {
-	e.preventDefault();
-	com.magadanski.utils.removeClass(document.body, 'dropTarget');
-}, true);
-
-document.addEventListener('DOMContentLoaded', function (e) {
-	player = new com.magadanski.Player(document.getElementById('player'));
-	subData = new com.magadanski.SubData();
-	
-	loadVideoButton = document.getElementById('load-video');
-	loadSubtitlesButton = document.getElementById('load-subtitles');
-	
-	playerDropTarget = document.getElementById('player-drop-target');
-	subDropTarget = document.getElementById('sub-drop-target');
-	
-	setStartButton = document.getElementById('set-start');
-	setStopButton = document.getElementById('set-stop');
-	setStopStartButton = document.getElementById('set-stop-start');
-	
-	saveToYouTubeButton = document.getElementById('save-to-youtube');
-	loadVideoFromYouTubeButton = document.getElementById('load-video-from-youtube');
-	
-	changeFontButton = document.getElementById('change-font');
-	helpButton = document.getElementById('help');
-	
-	loadVideoButton.addEventListener('change', function (e) {
-		if (typeof(e.currentTarget.files) != 'undefined') {
-			player.load(e.currentTarget.files[0]);
-		}
-	});
-	
-	playerDropTarget.addEventListener('drop', function (e) {
-		if (typeof(e.dataTransfer.files) != 'undefined') {
-			player.load(e.dataTransfer.files[0]);
-		}
-	});
-	
-	loadSubtitlesButton.addEventListener('change', function (e) {
-		if (typeof(e.currentTarget.files) != 'undefined') {
-			loadFileContent(e.currentTarget.files[0], onSubFileLoaded);
-		}
-	});
-	
-	subDropTarget.addEventListener('drop', function (e) {
-		if (typeof(e.dataTransfer.files) != 'undefined') {
-			loadFileContent(e.dataTransfer.files[0], onSubFileLoaded);
-		}
-	});
-	
-	function onSubFileLoaded(e, fileContent) {
-		subData.loadSubs(fileContent);
+(function () {
+	com.magadanski.Subogen = function () {
+		this.player = null;
+		this.subData = new com.magadanski.SubData();
+		this.loadVideoButton = null;
+		this.loadSubtitlesButton = null;
+		this.playerDropTarget = null;
+		this.subDropTarget = null;
+		this.setStartButton = null;
+		this.setStopButton = null;
+		this.setStopStartButton = null;
+		this.saveToYouTubeButton = null;
+		this.loadVideoFromYouTubeButton = null;
+		this.changeFontButton = null;
+		this.helpButton = null;
 	}
-});
-
-function loadFileContent(file, callback) {
-	if (window.FileReader) {
-		var chunkSize = 2097152; // 2MB
-		var startByte = 0;
-		var endByte = 0;
-		var reader = new FileReader(file);
-		var fileContent = null;
-		var fileSlice = file.slice || file.webkitSlice || file.mozSlice;
+	
+	com.magadanski.Subogen.prototype = new com.magadanski.WebApp();
+	com.magadanski.Subogen.prototype.constructor = com.magadanski.Subogen;
+	com.magadanski.Subogen.prototype.parent = com.magadanski.WebApp.prototype;
+	
+	com.magadanski.Subogen.prototype.loadSubs = function (file) {
+		var that = this;
 		
-		function readChunk() {
-			endByte = Math.min(startByte + chunkSize, file.size);
-			reader.readAsText( fileSlice.call(file, startByte, endByte) );
-		}
-		
-		reader.onloadend = function(e) {
-			if (e.target.readyState == FileReader.DONE) {
-				fileContent = new Blob([fileContent, e.target.result], { type: 'text/plain; charset=UTF-8', endings: 'native' });
+		if (file instanceof File) {
+			com.magadanski.utils.loadFileContent(file, function (e, fileContent) {
+				e.fileContent = fileContent;
 				
-				if (endByte < file.size) {
-					startByte += chunkSize;
-					readChunk();
-				} else {
-					if (typeof(callback) == 'function') {
-						callback(e, this.result);
-					}
-				}
-			}
+				that.dispatchEvent('subsloaded', e);
+			});
+		} else {
+			throw new com.magadanski.exceptions.TypeException('Subogen.loadSubs requires first argument to be File, ' + file.prototype + ' passed.');
 		}
-		
-		readChunk();
-	} else {
-		alert('Your browser does not support HTML5 File System access');
 	}
-}
+})();
+
+subogen = new com.magadanski.Subogen();
+subogen.init(function () {
+	subogen.addEventListener('subsloaded', function (e) {
+		subogen.subData.loadSubs(e.fileContent);
+	});
+	
+	window.addEventListener('dragenter', function (e) {
+		com.magadanski.utils.addClass(document.body, 'dropTarget');
+	});
+
+	window.addEventListener('dragleave', function (e) {
+		if (!e.pageX) com.magadanski.utils.removeClass(document.body, 'dropTarget');
+	});
+
+	window.addEventListener('dragover', function (e) {
+		e.preventDefault();
+	});
+
+	window.addEventListener('drop', function (e) {
+		e.preventDefault();
+		com.magadanski.utils.removeClass(document.body, 'dropTarget');
+	}, true);
+	
+	subogen.player = new com.magadanski.Player(document.getElementById('player'));
+	
+	subogen.loadVideoButton = document.getElementById('load-video');
+	subogen.loadSubtitlesButton = document.getElementById('load-subtitles');
+	
+	subogen.playerDropTarget = document.getElementById('player-drop-target');
+	subogen.subDropTarget = document.getElementById('sub-drop-target');
+	
+	subogen.setStartButton = document.getElementById('set-start');
+	subogen.setStopButton = document.getElementById('set-stop');
+	subogen.setStopStartButton = document.getElementById('set-stop-start');
+	
+	subogen.saveToYouTubeButton = document.getElementById('save-to-youtube');
+	subogen.loadVideoFromYouTubeButton = document.getElementById('load-video-from-youtube');
+	
+	subogen.changeFontButton = document.getElementById('change-font');
+	subogen.helpButton = document.getElementById('help');
+	
+	subogen.loadVideoButton.addEventListener('change', function (e) {
+		subogen.player.load(e.currentTarget.files[0]);
+	});
+	
+	subogen.playerDropTarget.addEventListener('drop', function (e) {
+		subogen.player.load(e.dataTransfer.files[0]);
+	});
+	
+	subogen.loadSubtitlesButton.addEventListener('change', function (e) {
+		subogen.loadSubs(e.currentTarget.files[0]);
+	});
+	
+	subogen.subDropTarget.addEventListener('drop', function (e) {
+		subogen.loadSubs(e.dataTransfer.files[0]);
+	});
+});

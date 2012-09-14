@@ -7,10 +7,30 @@ com.magadanski.SubEditor = function (g) {
 	if (typeof(g) == 'undefined') g = null;
 	
 	this.g = g;
+	this.currentLine = 0;
 }
 
-com.magadanski.SubEditor.prototype.render = function(subData) {
+com.magadanski.SubEditor.prototype.CURRENT_LINE_CLASS = 'currentLine';
+
+com.magadanski.SubEditor.prototype.getRow = function (index) {
+	return this.g.getElementsByTagName('tr').item(index);
+}
+
+com.magadanski.SubEditor.prototype.setCurrentLine = function (index) {
+	var row = this.getRow(index);
+	
+	if (typeof(row) != 'undefined') {
+		com.magadanski.utils.removeClass(this.getRow(this.currentLine), this.CURRENT_LINE_CLASS);
+		com.magadanski.utils.addClass(row, this.CURRENT_LINE_CLASS);
+		this.currentLine = index;
+	}
+}
+
+com.magadanski.SubEditor.prototype.render = function (subData) {
+	var that = this;
+	
 	var markup = '';
+	var tbody = this.g.getElementsByTagName('tbody').item(0);
 	
 	for (var s in subData) {
 		markup += '<tr>';
@@ -20,7 +40,20 @@ com.magadanski.SubEditor.prototype.render = function(subData) {
 		markup += '</tr>';
 	}
 	
-	this.g.getElementsByTagName('tbody').item(0).innerHTML = markup;
+	tbody.innerHTML = markup;
+	
+	var cells = that.g.getElementsByTagName('td');
+	for (var i = 0; i < cells.length; ++i) {
+		var cell = cells.item(i);
+		
+		cell.addEventListener('focus', function (e) {
+			that.setCurrentLine(e.target.parentNode.rowIndex);
+		});
+		
+		cell.addEventListener('blur', function (e) {
+			// TODO: externalize in update method call
+		});
+	}
 }
 
 com.magadanski.Subogen = null;

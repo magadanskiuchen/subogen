@@ -3,7 +3,7 @@ com.magadanski = (typeof(com.magadanski) != 'undefined') ? com.magadanski : {};
 com.magadanski.utils = (typeof(com.magadanski.utils) != 'undefined') ? com.magadanski.utils : {};
 
 com.magadanski.utils.addClass = function (element, className) {
-	if (typeof(element.className) != 'undefined') {
+	if (element && typeof(element.className) != 'undefined') {
 		if (!element.className.match(className)) element.className += ' ' + className;
 	}
 }
@@ -62,4 +62,25 @@ com.magadanski.utils.loadFileContent = function (file, callback) {
 	} else {
 		alert('Your browser does not support HTML5 File API access');
 	}
+}
+
+com.magadanski.utils.leadingZero = function (number) {
+	return (number < 10) ? ('0' + number) : number;
+}
+
+com.magadanski.utils.formatTime = function (seconds) {
+	if (typeof(seconds) == 'undefined') seconds = 0;
+	
+	var time = new Date(seconds * 1000);
+	var localTime = new Date(0);
+	
+	seconds = seconds.toString() + '000';
+	var miliseconds = seconds.match(/\.([\d]{3})/);
+	if (typeof(miliseconds) != 'object' || !miliseconds || typeof(miliseconds[1]) == 'undefined') {
+		miliseconds = '000';
+	} else {
+		miliseconds = miliseconds[1];
+	}
+	
+	return com.magadanski.utils.leadingZero(time.getHours() - localTime.getHours()) + ':' + com.magadanski.utils.leadingZero(time.getMinutes()) + ':' + com.magadanski.utils.leadingZero(time.getSeconds()) + ',' + miliseconds;
 }

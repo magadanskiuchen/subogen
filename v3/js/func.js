@@ -1,12 +1,37 @@
 com = (typeof(com) != 'undefined') ? com : {};
 com.magadanski = (typeof(com.magadanski) != 'undefined') ? com.magadanski : {};
 
+com.magadanski.SubEditor = function (g) {
+	var that = this;
+	
+	if (typeof(g) == 'undefined') g = null;
+	
+	this.g = g;
+}
+
+com.magadanski.SubEditor.prototype.render = function(subData) {
+	var markup = '';
+	
+	for (var s in subData) {
+		markup += '<tr>';
+			markup += '<td class="text" contenteditable="true">' + subData[s].text + '</td>';
+			markup += '<td class="start" contenteditable="true">' + com.magadanski.utils.formatTime(subData[s].start) + '</td>';
+			markup += '<td class="end" contenteditable="true">' + com.magadanski.utils.formatTime(subData[s].end) + '</td>';
+		markup += '</tr>';
+	}
+	
+	this.g.getElementsByTagName('tbody').item(0).innerHTML = markup;
+}
+
 com.magadanski.Subogen = null;
 
 (function () {
 	com.magadanski.Subogen = function () {
 		this.player = null;
+		
 		this.subData = new com.magadanski.SubData();
+		this.subEditor = null;
+		
 		this.loadVideoButton = null;
 		this.loadSubtitlesButton = null;
 		this.playerDropTarget = null;
@@ -43,6 +68,7 @@ subogen = new com.magadanski.Subogen();
 subogen.init(function () {
 	subogen.addEventListener('subsloaded', function (e) {
 		subogen.subData.loadSubs(e.fileContent);
+		subogen.subEditor.render(subogen.subData.data);
 	});
 	
 	window.addEventListener('dragenter', function (e) {
@@ -63,6 +89,7 @@ subogen.init(function () {
 	}, true);
 	
 	subogen.player = new com.magadanski.Player(document.getElementById('player'));
+	subogen.subEditor = new com.magadanski.SubEditor(document.querySelector('#grid > table'));
 	
 	subogen.loadVideoButton = document.getElementById('load-video');
 	subogen.loadSubtitlesButton = document.getElementById('load-subtitles');

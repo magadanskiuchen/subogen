@@ -8,7 +8,12 @@ com.magadanski.SubEditor = function (g) {
 	
 	this.g = g;
 	this.currentLine = 0;
+	this.subData = null;
 }
+
+com.magadanski.SubEditor.prototype = new com.magadanski.EventDispatcher();
+com.magadanski.SubEditor.prototype.constructor = com.magadanski.SubEditor;
+com.magadanski.SubEditor.prototype.parent = com.magadanski.EventDispatcher.prototype;
 
 com.magadanski.SubEditor.prototype.CURRENT_LINE_CLASS = 'currentLine';
 
@@ -29,14 +34,16 @@ com.magadanski.SubEditor.prototype.setCurrentLine = function (index) {
 com.magadanski.SubEditor.prototype.render = function (subData) {
 	var that = this;
 	
+	this.subData = subData;
+	
 	var markup = '';
 	var tbody = this.g.getElementsByTagName('tbody').item(0);
 	
-	for (var s in subData) {
-		markup += '<tr>';
-			markup += '<td class="text" contenteditable="true">' + subData[s].text + '</td>';
-			markup += '<td class="start" contenteditable="true">' + com.magadanski.utils.formatTime(subData[s].start) + '</td>';
-			markup += '<td class="end" contenteditable="true">' + com.magadanski.utils.formatTime(subData[s].end) + '</td>';
+	for (var s in this.subData) {
+		markup += '<tr data-index="' + s + '">';
+			markup += '<td class="text" contenteditable="true">' + this.subData[s].text + '</td>';
+			markup += '<td class="start" contenteditable="true">' + com.magadanski.utils.formatTime(this.subData[s].start) + '</td>';
+			markup += '<td class="end" contenteditable="true">' + com.magadanski.utils.formatTime(this.subData[s].end) + '</td>';
 		markup += '</tr>';
 	}
 	
@@ -51,7 +58,19 @@ com.magadanski.SubEditor.prototype.render = function (subData) {
 		});
 		
 		cell.addEventListener('blur', function (e) {
-			// TODO: externalize in update method call
+			var row = e.target.parentNode;
+			var subDataIndex = row.getAttribute('data-index');
+			var subRipParser = new com.magadanski.parsers.SubRipParser();
+			
+			that.subData[subDataIndex].text = row.getElementsByClassName('text').item(0).innerHTML.replace(/<br\s?\/?>/, '\n');
+			that.subData[subDataIndex].start = subRipParser.parseTime(row.getElementsByClassName('start').item(0).innerText);
+			that.subData[subDataIndex].end = subRipParser.parseTime(row.getElementsByClassName('end').item(0).innerText);
+			
+			var customEvent = {};
+			customEvent.originalEvent = e;
+			customEvent.currentTarget = that;
+			
+			that.dispatchEvent('update', customEvent);
 		});
 	}
 }
@@ -87,9 +106,12 @@ com.magadanski.Subogen = null;
 		
 		if (file instanceof File) {
 			com.magadanski.utils.loadFileContent(file, function (e, fileContent) {
-				e.fileContent = fileContent;
+				var customEvent = {};
+				customEvent.originalEvent = e;
+				customEvent.currentTarget = that;
+				customEvent.fileContent = fileContent;
 				
-				that.dispatchEvent('subsloaded', e);
+				that.dispatchEvent('subsloaded', customEvent);
 			});
 		} else {
 			throw new com.magadanski.exceptions.TypeException('Subogen.loadSubs requires first argument to be File, ' + file.prototype + ' passed.');
@@ -122,7 +144,11 @@ subogen.init(function () {
 	}, true);
 	
 	subogen.player = new com.magadanski.Player(document.getElementById('player'));
+	
 	subogen.subEditor = new com.magadanski.SubEditor(document.querySelector('#grid > table'));
+	subogen.subEditor.addEventListener('update', function (e) {
+		subogen.subData.data = e.currentTarget.subData;
+	});
 	
 	subogen.loadVideoButton = document.getElementById('load-video');
 	subogen.loadSubtitlesButton = document.getElementById('load-subtitles');

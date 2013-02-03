@@ -1,82 +1,90 @@
 com = (typeof(com) != 'undefined') ? com : {};
 com.magadanski = (typeof(com.magadanski) != 'undefined') ? com.magadanski : {};
 
-com.magadanski.SubEditor = function (g) {
-	var that = this;
+com.magadanski.SubEditor = null;
+(function () {
+	var currentLine;
 	
-	if (typeof(g) == 'undefined') g = null;
-	
-	this.g = g;
-	this.currentLine = 0;
-	this.subData = null;
-}
-
-com.magadanski.SubEditor.prototype = new com.magadanski.EventDispatcher();
-com.magadanski.SubEditor.prototype.constructor = com.magadanski.SubEditor;
-com.magadanski.SubEditor.prototype.parent = com.magadanski.EventDispatcher.prototype;
-
-com.magadanski.SubEditor.prototype.CURRENT_LINE_CLASS = 'currentLine';
-
-com.magadanski.SubEditor.prototype.getRow = function (index) {
-	return this.g.getElementsByTagName('tr').item(index);
-}
-
-com.magadanski.SubEditor.prototype.setCurrentLine = function (index) {
-	var row = this.getRow(index);
-	
-	if (typeof(row) != 'undefined') {
-		com.magadanski.utils.removeClass(this.getRow(this.currentLine), this.CURRENT_LINE_CLASS);
-		com.magadanski.utils.addClass(row, this.CURRENT_LINE_CLASS);
-		this.currentLine = index;
-	}
-}
-
-com.magadanski.SubEditor.prototype.render = function (subData) {
-	var that = this;
-	
-	this.subData = subData;
-	
-	var markup = '';
-	var tbody = this.g.getElementsByTagName('tbody').item(0);
-	
-	for (var s in this.subData) {
-		markup += '<tr data-index="' + s + '">';
-			markup += '<td class="text" contenteditable="true">' + this.subData[s].text + '</td>';
-			markup += '<td class="start" contenteditable="true">' + com.magadanski.utils.formatTime(this.subData[s].start) + '</td>';
-			markup += '<td class="end" contenteditable="true">' + com.magadanski.utils.formatTime(this.subData[s].end) + '</td>';
-		markup += '</tr>';
-	}
-	
-	tbody.innerHTML = markup;
-	
-	var cells = that.g.getElementsByTagName('td');
-	for (var i = 0; i < cells.length; ++i) {
-		var cell = cells.item(i);
+	com.magadanski.SubEditor = function (g) {
+		var that = this;
 		
-		cell.addEventListener('focus', function (e) {
-			that.setCurrentLine(e.target.parentNode.rowIndex);
-		});
+		if (typeof(g) == 'undefined') g = null;
 		
-		cell.addEventListener('blur', function (e) {
-			var row = e.target.parentNode;
-			var subDataIndex = row.getAttribute('data-index');
-			var subRipParser = new com.magadanski.parsers.SubRipParser();
-			
-			that.subData[subDataIndex].text = row.getElementsByClassName('text').item(0).innerHTML.replace(/<br\s?\/?>/, '\n');
-			that.subData[subDataIndex].start = subRipParser.parseTime(row.getElementsByClassName('start').item(0).innerText);
-			that.subData[subDataIndex].end = subRipParser.parseTime(row.getElementsByClassName('end').item(0).innerText);
-			
-			var customEvent = {};
-			customEvent.originalEvent = e;
-			customEvent.currentTarget = that;
-			
-			that.dispatchEvent('update', customEvent);
-		});
+		that.g = g;
+		currentLine = 0;
+		that.subData = null;
 	}
-}
+	
+	com.magadanski.SubEditor.prototype = new com.magadanski.EventDispatcher();
+	com.magadanski.SubEditor.prototype.constructor = com.magadanski.SubEditor;
+	com.magadanski.SubEditor.prototype.parent = com.magadanski.EventDispatcher.prototype;
+	
+	com.magadanski.SubEditor.prototype.CURRENT_LINE_CLASS = 'currentLine';
+	
+	com.magadanski.SubEditor.prototype.getRow = function (index) {
+		return this.g.getElementsByTagName('tr').item(index);
+	}
+	
+	com.magadanski.SubEditor.prototype.getCurrentLine = function () {
+		return currentLine;
+	}
+	
+	com.magadanski.SubEditor.prototype.setCurrentLine = function (index) {
+		var row = this.getRow(index);
+		
+		if (typeof(row) != 'undefined') {
+			com.magadanski.utils.removeClass(this.getRow(currentLine), this.CURRENT_LINE_CLASS);
+			com.magadanski.utils.addClass(row, this.CURRENT_LINE_CLASS);
+			currentLine = index;
+		}
+	}
+	
+	com.magadanski.SubEditor.prototype.render = function (subData) {
+		var that = this;
+		
+		that.subData = subData;
+		
+		var markup = '';
+		var tbody = that.g.getElementsByTagName('tbody').item(0);
+		
+		for (var s in that.subData) {
+			markup += '<tr data-index="' + s + '">';
+				markup += '<td class="text" contenteditable="true">' + that.subData[s].text + '</td>';
+				markup += '<td class="start" contenteditable="true">' + com.magadanski.utils.formatTime(that.subData[s].start) + '</td>';
+				markup += '<td class="end" contenteditable="true">' + com.magadanski.utils.formatTime(that.subData[s].end) + '</td>';
+			markup += '</tr>';
+		}
+		
+		tbody.innerHTML = markup;
+		
+		var cells = that.g.getElementsByTagName('td');
+		for (var i = 0; i < cells.length; ++i) {
+			var cell = cells.item(i);
+			
+			cell.addEventListener('focus', function (e) {
+				that.setCurrentLine(e.target.parentNode.rowIndex);
+			});
+			
+			cell.addEventListener('blur', function (e) {
+				var row = e.target.parentNode;
+				var subDataIndex = row.getAttribute('data-index');
+				var subRipParser = new com.magadanski.parsers.SubRipParser();
+				
+				that.subData[subDataIndex].text = row.getElementsByClassName('text').item(0).innerHTML.replace(/<br\s?\/?>/, '\n');
+				that.subData[subDataIndex].start = subRipParser.parseTime(row.getElementsByClassName('start').item(0).innerText);
+				that.subData[subDataIndex].end = subRipParser.parseTime(row.getElementsByClassName('end').item(0).innerText);
+				
+				var customEvent = {};
+				customEvent.originalEvent = e;
+				customEvent.currentTarget = that;
+				
+				that.dispatchEvent('update', customEvent);
+			});
+		}
+	}
+})();
 
 com.magadanski.Subogen = null;
-
 (function () {
 	com.magadanski.Subogen = function () {
 		this.player = null;

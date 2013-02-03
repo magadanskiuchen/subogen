@@ -7,6 +7,7 @@
 	<meta name="apple-mobile-web-app-capable" content="yes" />
 	<title>Subogen</title>
 	
+	<link rel="shortcut icon" href="images/subogen.ico" />
 	<link rel="stylesheet" type="text/css" href="style.css" />
 	
 	<script type="text/javascript" src="js/exceptions.js"></script>

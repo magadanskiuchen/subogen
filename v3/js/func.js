@@ -120,7 +120,7 @@ com.magadanski.Subogen = null;
 })();
 
 subogen = new com.magadanski.Subogen();
-subogen.init(function () {
+subogen.addEventListener('init', function () {
 	subogen.addEventListener('subsloaded', function (e) {
 		subogen.subData.loadSubs(e.fileContent);
 		subogen.subEditor.render(subogen.subData.data);

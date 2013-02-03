@@ -17,6 +17,7 @@ com.magadanski.EventDispatcher = null;
 	com.magadanski.EventDispatcher.prototype.dispatchEvent = function (eventType, eventObj) {
 		if (typeof(events[eventType]) == 'object') {
 			for (var callback in events[eventType]) {
+				eventObj.type = eventType;
 				if (typeof(events[eventType][callback]) == 'function') events[eventType][callback](eventObj);
 			}
 		}
@@ -26,19 +27,27 @@ com.magadanski.EventDispatcher = null;
 com.magadanski.WebApp = null;
 
 (function () {
-	var events = {};
-	
-	com.magadanski.WebApp = function () {};
+	com.magadanski.WebApp = function () {
+		var that = this;
+		
+		document.addEventListener('DOMContentLoaded', function (e) {
+			var customEvent = {};
+			customEvent.originalEvent = e;
+			customEvent.currentTarget = that;
+			
+			that.dispatchEvent('init', customEvent);
+		});
+		
+		window.addEventListener('load', function (e) {
+			var customEvent = {};
+			customEvent.originalEvent = e;
+			customEvent.currentTarget = that;
+			
+			that.dispatchEvent('load', customEvent);
+		});
+	};
 	
 	com.magadanski.WebApp.prototype = new com.magadanski.EventDispatcher();
 	com.magadanski.WebApp.prototype.constructor = com.magadanski.WebApp;
 	com.magadanski.WebApp.prototype.parent = com.magadanski.EventDispatcher.prototype;
-	
-	com.magadanski.WebApp.prototype.init = function (callback) {
-		if (typeof(callback) == 'function')  document.addEventListener('DOMContentLoaded', callback);
-	}
-	
-	com.magadanski.WebApp.prototype.loaded = function (callback) {
-		window.addEventListener('load', callback);
-	}
 })();

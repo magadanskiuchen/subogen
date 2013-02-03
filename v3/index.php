@@ -9,8 +9,8 @@
 	
 	<link rel="stylesheet" type="text/css" href="style.css" />
 	
-	<script type="text/javascript" src="js/utils.js"></script>
 	<script type="text/javascript" src="js/exceptions.js"></script>
+	<script type="text/javascript" src="js/utils.js"></script>
 	<script type="text/javascript" src="js/webapp.js"></script>
 	<script type="text/javascript" src="js/subs-api.js"></script>
 	<script type="text/javascript" src="js/func.js"></script>

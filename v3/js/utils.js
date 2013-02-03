@@ -16,6 +16,10 @@ com.magadanski.utils.removeClass = function (element, className) {
 
 // shim for window.URL.createObjectURL
 com.magadanski.utils.createObjectURL = function(file) {
+	if (!file instanceof File) {
+		throw new com.magadanski.exceptions.TypeException('com.magadanski.utils.createObjectURL requires argument to be File, ' + file.prototype + ' passed.');
+	}
+	
 	var output = '';
 	
 	if (window.URL) {
@@ -30,6 +34,10 @@ com.magadanski.utils.createObjectURL = function(file) {
 }
 
 com.magadanski.utils.loadFileContent = function (file, callback) {
+	if (!file instanceof File) {
+		throw new com.magadanski.exceptions.TypeException('com.magadanski.utils.loadFileContent requires argument to be File, ' + file.prototype + ' passed.');
+	}
+	
 	if (window.FileReader) {
 		var chunkSize = 2097152; // 2MB
 		var startByte = 0;

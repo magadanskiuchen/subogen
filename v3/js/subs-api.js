@@ -148,7 +148,7 @@ com.magadanski.parsers.SubAutoParser = null;
 	com.magadanski.parsers.SubAutoParser.prototype.parent = com.magadanski.parsers.SubParser.prototype;
 })();
 
-com.magadanski.SubData = null
+com.magadanski.SubData = null;
 (function () {
 	com.magadanski.SubData = function (text) {
 		var that = this;

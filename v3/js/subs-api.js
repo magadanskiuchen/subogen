@@ -1,9 +1,10 @@
-com = (typeof(com) != 'undefined') ? com : {};
-com.magadanski = (typeof(com.magadanski) != 'undefined') ? com.magadanski : {};
-com.magadanski.parsers = (typeof(com.magadanski.parsers) != 'undefined') ? com.magadanski.parsers : {};
+pack('com.magadanski.parsers');
 
 com.magadanski.Player = null;
 (function () {
+	var createObjectURL = inc('com.magadanski.utils.createObjectURL', true);
+	var TypeException = inc('com.magadanski.exceptions.TypeException', true);
+	
 	function Player(p) {
 		var that = this;
 		
@@ -14,10 +15,10 @@ com.magadanski.Player = null;
 	Player.prototype.load = function (file) {
 		if (file instanceof File) {
 			if (this.p.canPlayType(file.type)) {
-				this.p.src = com.magadanski.utils.createObjectURL(file);
+				this.p.src = createObjectURL(file);
 			}
 		} else {
-			throw new com.magadanski.exceptions.TypeException('Player.load requires first argument to be File, ' + file.prototype + ' passed.');
+			throw new TypeException('Player.load requires first argument to be File, ' + file.prototype + ' passed.');
 		}
 	}
 	
@@ -160,6 +161,8 @@ com.magadanski.parsers.SubAutoParser = null;
 
 com.magadanski.SubData = null;
 (function () {
+	var SubAutoParser = inc('com.magadanski.parsers.SubAutoParser', true);
+	
 	function SubData(text) {
 		var that = this;
 		
@@ -214,7 +217,7 @@ com.magadanski.SubData = null;
 		}
 		
 		that.loadSubs = function (text) {
-			var parser = new com.magadanski.parsers.SubAutoParser(text);
+			var parser = new SubAutoParser(text);
 			that.data = parser.parse(text);
 		}
 		

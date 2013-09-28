@@ -10,6 +10,7 @@
 	<link rel="shortcut icon" href="images/subogen.ico" />
 	<link rel="stylesheet" type="text/css" href="style.css" />
 	
+	<script type="text/javascript" src="js/framework.js"></script>
 	<script type="text/javascript" src="js/exceptions.js"></script>
 	<script type="text/javascript" src="js/utils.js"></script>
 	<script type="text/javascript" src="js/webapp.js"></script>

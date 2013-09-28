@@ -1,5 +1,4 @@
-com = (typeof(com) != 'undefined') ? com : {};
-com.magadanski = (typeof(com.magadanski) != 'undefined') ? com.magadanski : {};
+pack('com.magadanski');
 
 com.magadanski.EventDispatcher = null;
 (function () {

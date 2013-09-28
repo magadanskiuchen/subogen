@@ -1,5 +1,12 @@
-com = (typeof(com) != 'undefined') ? com : {};
-com.magadanski = (typeof(com.magadanski) != 'undefined') ? com.magadanski : {};
+pack('com.magadanski');
+
+inc('com.magadanski.utils');
+
+inc('com.magadanski.exceptions.TypeException');
+inc('com.magadanski.EventDispatcher');
+inc('com.magadanski.parsers.SubRipParser');
+inc('com.magadanski.SubData');
+inc('com.magadanski.WebApp');
 
 com.magadanski.SubEditor = null;
 (function () {
@@ -15,9 +22,9 @@ com.magadanski.SubEditor = null;
 		that.subData = null;
 	}
 	
-	SubEditor.prototype = new com.magadanski.EventDispatcher();
+	SubEditor.prototype = new EventDispatcher();
 	SubEditor.prototype.constructor = SubEditor;
-	SubEditor.prototype.parent = com.magadanski.EventDispatcher.prototype;
+	SubEditor.prototype.parent = EventDispatcher.prototype;
 	
 	SubEditor.prototype.CURRENT_LINE_CLASS = 'currentLine';
 	
@@ -33,8 +40,8 @@ com.magadanski.SubEditor = null;
 		var row = this.getRow(index);
 		
 		if (typeof(row) != 'undefined') {
-			com.magadanski.utils.removeClass(this.getRow(currentLine), this.CURRENT_LINE_CLASS);
-			com.magadanski.utils.addClass(row, this.CURRENT_LINE_CLASS);
+			utils.removeClass(this.getRow(currentLine), this.CURRENT_LINE_CLASS);
+			utils.addClass(row, this.CURRENT_LINE_CLASS);
 			currentLine = index;
 		}
 	}
@@ -50,8 +57,8 @@ com.magadanski.SubEditor = null;
 		for (var s in that.subData) {
 			markup += '<tr data-index="' + s + '">';
 				markup += '<td class="text" contenteditable="true">' + that.subData[s].text + '</td>';
-				markup += '<td class="start" contenteditable="true">' + com.magadanski.utils.formatTime(that.subData[s].start) + '</td>';
-				markup += '<td class="end" contenteditable="true">' + com.magadanski.utils.formatTime(that.subData[s].end) + '</td>';
+				markup += '<td class="start" contenteditable="true">' + utils.formatTime(that.subData[s].start) + '</td>';
+				markup += '<td class="end" contenteditable="true">' + utils.formatTime(that.subData[s].end) + '</td>';
 			markup += '</tr>';
 		}
 		
@@ -68,7 +75,7 @@ com.magadanski.SubEditor = null;
 			cell.addEventListener('blur', function (e) {
 				var row = e.target.parentNode;
 				var subDataIndex = row.getAttribute('data-index');
-				var subRipParser = new com.magadanski.parsers.SubRipParser();
+				var subRipParser = new SubRipParser();
 				
 				that.subData[subDataIndex].text = row.getElementsByClassName('text').item(0).innerHTML.replace(/<br\s?\/?>/, '\n');
 				that.subData[subDataIndex].start = subRipParser.parseTime(row.getElementsByClassName('start').item(0).innerText);
@@ -91,7 +98,7 @@ com.magadanski.Subogen = null;
 	function Subogen() {
 		this.player = null;
 		
-		this.subData = new com.magadanski.SubData();
+		this.subData = new SubData();
 		this.subEditor = null;
 		
 		this.loadVideoButton = null;
@@ -107,15 +114,15 @@ com.magadanski.Subogen = null;
 		this.helpButton = null;
 	}
 	
-	Subogen.prototype = new com.magadanski.WebApp();
+	Subogen.prototype = new WebApp();
 	Subogen.prototype.constructor = Subogen;
-	Subogen.prototype.parent = com.magadanski.WebApp.prototype;
+	Subogen.prototype.parent = WebApp.prototype;
 	
 	Subogen.prototype.loadSubs = function (file) {
 		var that = this;
 		
 		if (file instanceof File) {
-			com.magadanski.utils.loadFileContent(file, function (e, fileContent) {
+			utils.loadFileContent(file, function (e, fileContent) {
 				var customEvent = {};
 				customEvent.originalEvent = e;
 				customEvent.currentTarget = that;
@@ -124,7 +131,7 @@ com.magadanski.Subogen = null;
 				that.dispatchEvent('subsloaded', customEvent);
 			});
 		} else {
-			throw new com.magadanski.exceptions.TypeException('Subogen.loadSubs requires first argument to be File, ' + file.prototype + ' passed.');
+			throw new TypeException('Subogen.loadSubs requires first argument to be File, ' + file.prototype + ' passed.');
 		}
 	}
 	
@@ -139,11 +146,11 @@ subogen.addEventListener('init', function () {
 	});
 	
 	window.addEventListener('dragenter', function (e) {
-		com.magadanski.utils.addClass(document.body, 'dropTarget');
+		utils.addClass(document.body, 'dropTarget');
 	});
 
 	window.addEventListener('dragleave', function (e) {
-		if (!e.pageX) com.magadanski.utils.removeClass(document.body, 'dropTarget');
+		if (!e.pageX) utils.removeClass(document.body, 'dropTarget');
 	});
 
 	window.addEventListener('dragover', function (e) {
@@ -152,7 +159,7 @@ subogen.addEventListener('init', function () {
 
 	window.addEventListener('drop', function (e) {
 		e.preventDefault();
-		com.magadanski.utils.removeClass(document.body, 'dropTarget');
+		utils.removeClass(document.body, 'dropTarget');
 	}, true);
 	
 	subogen.player = new com.magadanski.Player(document.getElementById('player'));

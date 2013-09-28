@@ -1,6 +1,4 @@
-com = (typeof(com) != 'undefined') ? com : {};
-com.magadanski = (typeof(com.magadanski) != 'undefined') ? com.magadanski : {};
-com.magadanski.utils = (typeof(com.magadanski.utils) != 'undefined') ? com.magadanski.utils : {};
+pack('com.magadanski.utils');
 
 com.magadanski.utils.addClass = function (element, className) {
 	if (element && typeof(element.className) != 'undefined') {
@@ -16,8 +14,10 @@ com.magadanski.utils.removeClass = function (element, className) {
 
 // shim for window.URL.createObjectURL
 com.magadanski.utils.createObjectURL = function(file) {
+	var TypeException = inc('com.magadanski.exceptions.TypeException', true);
+	
 	if (!file instanceof File) {
-		throw new com.magadanski.exceptions.TypeException('com.magadanski.utils.createObjectURL requires argument to be File, ' + file.prototype + ' passed.');
+		throw new TypeException('com.magadanski.utils.createObjectURL requires argument to be File, ' + file.prototype + ' passed.');
 	}
 	
 	var output = '';
@@ -34,8 +34,10 @@ com.magadanski.utils.createObjectURL = function(file) {
 }
 
 com.magadanski.utils.loadFileContent = function (file, callback) {
+	var TypeException = inc('com.magadanski.exceptions.TypeException', true);
+	
 	if (!file instanceof File) {
-		throw new com.magadanski.exceptions.TypeException('com.magadanski.utils.loadFileContent requires argument to be File, ' + file.prototype + ' passed.');
+		throw new TypeException('com.magadanski.utils.loadFileContent requires argument to be File, ' + file.prototype + ' passed.');
 	}
 	
 	if (window.FileReader) {
@@ -77,6 +79,8 @@ com.magadanski.utils.leadingZero = function (number) {
 }
 
 com.magadanski.utils.formatTime = function (seconds) {
+	var leadingZero = inc('com.magadanski.utils.leadingZero', true);
+	
 	if (typeof(seconds) == 'undefined') seconds = 0;
 	
 	var time = new Date(seconds * 1000);
@@ -90,5 +94,5 @@ com.magadanski.utils.formatTime = function (seconds) {
 		miliseconds = miliseconds[1];
 	}
 	
-	return com.magadanski.utils.leadingZero(time.getHours() - localTime.getHours()) + ':' + com.magadanski.utils.leadingZero(time.getMinutes()) + ':' + com.magadanski.utils.leadingZero(time.getSeconds()) + ',' + miliseconds;
+	return leadingZero(time.getHours() - localTime.getHours()) + ':' + leadingZero(time.getMinutes()) + ':' + leadingZero(time.getSeconds()) + ',' + miliseconds;
 }

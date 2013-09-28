@@ -43,8 +43,6 @@ input[type="file"].button { opacity: 0; }
 body.dropTarget #player-drop-target,
 body.dropTarget #sub-drop-target { display: block; }
 
-#_STP_slsdiv { display: none; }
-
 @media only screen and (-webkit-min-device-pixel-ratio: 1.5), only screen and (min--moz-device-pixel-ratio: 1.5), only screen and (min-resolution: 240dpi) {
 	.button { background-image: url(images/controls-sprite@2x.png); -webkit-background-size: 100px 250px; -moz-background-size: 100px 250px; background-size: 100px 250px; }
 }

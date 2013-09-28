@@ -5,7 +5,7 @@ com.magadanski.SubEditor = null;
 (function () {
 	var currentLine;
 	
-	com.magadanski.SubEditor = function (g) {
+	function SubEditor(g) {
 		var that = this;
 		
 		if (typeof(g) == 'undefined') g = null;
@@ -15,21 +15,21 @@ com.magadanski.SubEditor = null;
 		that.subData = null;
 	}
 	
-	com.magadanski.SubEditor.prototype = new com.magadanski.EventDispatcher();
-	com.magadanski.SubEditor.prototype.constructor = com.magadanski.SubEditor;
-	com.magadanski.SubEditor.prototype.parent = com.magadanski.EventDispatcher.prototype;
+	SubEditor.prototype = new com.magadanski.EventDispatcher();
+	SubEditor.prototype.constructor = SubEditor;
+	SubEditor.prototype.parent = com.magadanski.EventDispatcher.prototype;
 	
-	com.magadanski.SubEditor.prototype.CURRENT_LINE_CLASS = 'currentLine';
+	SubEditor.prototype.CURRENT_LINE_CLASS = 'currentLine';
 	
-	com.magadanski.SubEditor.prototype.getRow = function (index) {
+	SubEditor.prototype.getRow = function (index) {
 		return this.g.getElementsByTagName('tr').item(index);
 	}
 	
-	com.magadanski.SubEditor.prototype.getCurrentLine = function () {
+	SubEditor.prototype.getCurrentLine = function () {
 		return currentLine;
 	}
 	
-	com.magadanski.SubEditor.prototype.setCurrentLine = function (index) {
+	SubEditor.prototype.setCurrentLine = function (index) {
 		var row = this.getRow(index);
 		
 		if (typeof(row) != 'undefined') {
@@ -39,7 +39,7 @@ com.magadanski.SubEditor = null;
 		}
 	}
 	
-	com.magadanski.SubEditor.prototype.render = function (subData) {
+	SubEditor.prototype.render = function (subData) {
 		var that = this;
 		
 		that.subData = subData;
@@ -82,11 +82,13 @@ com.magadanski.SubEditor = null;
 			});
 		}
 	}
+	
+	com.magadanski.SubEditor = SubEditor;
 })();
 
 com.magadanski.Subogen = null;
 (function () {
-	com.magadanski.Subogen = function () {
+	function Subogen() {
 		this.player = null;
 		
 		this.subData = new com.magadanski.SubData();
@@ -105,11 +107,11 @@ com.magadanski.Subogen = null;
 		this.helpButton = null;
 	}
 	
-	com.magadanski.Subogen.prototype = new com.magadanski.WebApp();
-	com.magadanski.Subogen.prototype.constructor = com.magadanski.Subogen;
-	com.magadanski.Subogen.prototype.parent = com.magadanski.WebApp.prototype;
+	Subogen.prototype = new com.magadanski.WebApp();
+	Subogen.prototype.constructor = Subogen;
+	Subogen.prototype.parent = com.magadanski.WebApp.prototype;
 	
-	com.magadanski.Subogen.prototype.loadSubs = function (file) {
+	Subogen.prototype.loadSubs = function (file) {
 		var that = this;
 		
 		if (file instanceof File) {
@@ -125,6 +127,8 @@ com.magadanski.Subogen = null;
 			throw new com.magadanski.exceptions.TypeException('Subogen.loadSubs requires first argument to be File, ' + file.prototype + ' passed.');
 		}
 	}
+	
+	com.magadanski.Subogen = Subogen;
 })();
 
 subogen = new com.magadanski.Subogen();

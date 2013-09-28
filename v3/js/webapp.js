@@ -2,19 +2,18 @@ com = (typeof(com) != 'undefined') ? com : {};
 com.magadanski = (typeof(com.magadanski) != 'undefined') ? com.magadanski : {};
 
 com.magadanski.EventDispatcher = null;
-
 (function () {
 	var events = {};
 	
-	com.magadanski.EventDispatcher = function () {};
+	function EventDispatcher() {};
 	
-	com.magadanski.EventDispatcher.prototype.addEventListener = function (eventType, callback) {
+	EventDispatcher.prototype.addEventListener = function (eventType, callback) {
 		if (typeof(events[eventType]) == 'undefined') events[eventType] = [];
 		
 		events[eventType].push(callback);
 	}
 	
-	com.magadanski.EventDispatcher.prototype.dispatchEvent = function (eventType, eventObj) {
+	EventDispatcher.prototype.dispatchEvent = function (eventType, eventObj) {
 		if (typeof(events[eventType]) == 'object') {
 			for (var callback in events[eventType]) {
 				eventObj.type = eventType;
@@ -22,12 +21,13 @@ com.magadanski.EventDispatcher = null;
 			}
 		}
 	}
+	
+	com.magadanski.EventDispatcher = EventDispatcher;
 })();
 
 com.magadanski.WebApp = null;
-
 (function () {
-	com.magadanski.WebApp = function () {
+	function WebApp() {
 		var that = this;
 		
 		document.addEventListener('DOMContentLoaded', function (e) {
@@ -47,7 +47,9 @@ com.magadanski.WebApp = null;
 		});
 	};
 	
-	com.magadanski.WebApp.prototype = new com.magadanski.EventDispatcher();
-	com.magadanski.WebApp.prototype.constructor = com.magadanski.WebApp;
-	com.magadanski.WebApp.prototype.parent = com.magadanski.EventDispatcher.prototype;
+	WebApp.prototype = new com.magadanski.EventDispatcher();
+	WebApp.prototype.constructor = WebApp;
+	WebApp.prototype.parent = com.magadanski.EventDispatcher.prototype;
+	
+	com.magadanski.WebApp = WebApp;
 })();

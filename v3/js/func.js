@@ -156,6 +156,22 @@ subogen.addEventListener('init', function () {
 	}, true);
 	
 	subogen.player = new Player(document.getElementById('player'));
+	subogen.player.addEventListener('videoLoaded', function (e) {
+		// clear old listeners
+		subogen.player.p.removeEventListener('timeupdate');
+		
+		subogen.player.p.addEventListener('timeupdate', function (e) {
+			var time = e.srcElement.currentTime;
+			var subDataItem = subogen.subData.getByTime(time);
+			var text = '';
+			
+			if (subDataItem && typeof(subDataItem.start) != 'undefined' && subDataItem.start < subDataItem.end) {
+				text = subDataItem.text.replace(/\n/, '<br />');
+			}
+			
+			subogen.player.text(text);
+		});
+	});
 	
 	subogen.subEditor = new com.magadanski.SubEditor(document.querySelector('#grid > table'));
 	subogen.subEditor.addEventListener('update', function (e) {

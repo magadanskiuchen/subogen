@@ -3,20 +3,32 @@ define('com.magadanski.Player', function () {
 	var utils = inc('com.magadanski.utils', true);
 	var TypeException = inc('com.magadanski.exceptions.TypeException', true);
 	
+	var that = {};
 	var text = '';
 	var subtitleClass = 'subtitles';
 	
 	function Player(p) {
-		var that = this;
+		that = this;
 		
 		if (typeof(p) == 'undefined') p = null;
 		that.p = p;
+	}
+	
+	Player.inherits(com.magadanski.EventDispatcher);
+	
+	function removeSubtitles() {
+		s = that.p.parentNode.querySelector('p.' + subtitleClass);
+		
+		if (s) {
+			that.p.parentNode.removeChild(s);
+		}
 	}
 	
 	Player.prototype.load = function (file) {
 		if (file instanceof File) {
 			if (this.p.canPlayType(file.type)) {
 				this.p.src = utils.createObjectURL(file);
+				this.dispatchEvent('videoLoaded');
 			} // TODO: add "else" statement to let users know video type is not supported
 		} else {
 			throw new TypeException('Player.load requires first argument to be File, ' + file.prototype + ' passed.');
@@ -28,13 +40,13 @@ define('com.magadanski.Player', function () {
 		
 		if (typeof(subtitle) != 'undefined') {
 			if (text != '') {
-				that.p.parentNode.removeChild(that.querySelector('p.' + subtitleClass));
+				removeSubtitles();
 			}
 			
 			text = subtitle;
 			
 			if (text == '') {
-				that.p.parentNode.removeChild(that.querySelector('p.' + subtitleClass));
+				removeSubtitles();
 			} else {
 				var t = document.createElement('p');
 				t.innerText = text;
@@ -87,7 +99,7 @@ define('com.magadanski.parsers.SubTextParser', function () {
 		var lines = text.split(/\n/);
 		
 		for (var line in lines) {
-			data.push({ text: lines[line], start: 0, stop: 0 });
+			data.push({ text: lines[line], start: 0, end: 0 });
 		}
 		
 		return data;
@@ -182,12 +194,12 @@ define('com.magadanski.SubData', function () {
 		
 		that.data = [];
 		
-		that.append = function (text, start, stop) {
-			data.push({ text: text, start: start, stop: stop });
+		that.append = function (text, start, end) {
+			that.data.push({ text: text, start: start, end: end });
 		}
 		
-		that.prepend = function (text, start, stop) {
-			data.unshift({ text: text, start: start, stop: stop });
+		that.prepend = function (text, start, end) {
+			that.data.unshift({ text: text, start: start, end: end });
 		}
 		
 		that.getItem = function (index) {
@@ -197,19 +209,19 @@ define('com.magadanski.SubData', function () {
 		that.getByTime = function (time) {
 			var delta = -1;
 			var lowIndex = 0;
-			var midIndex = parseInt(data.length / 2);
-			var highIndex = data.length;
+			var midIndex = parseInt(that.data.length / 2);
+			var highIndex = that.data.length;
 			var item = null;
 			
-			for (var i = 0; i < data.length; ++i) {
-				item = data[midIndex];
+			for (var i = 0; i < that.data.length; ++i) {
+				item = that.data[midIndex];
 				
-				if (item && item.start && item.stop) {
-					if (item.start > time || item.stop == 0) {
+				if (item && item.start && item.end) {
+					if (item.start > time || item.end == 0) {
 						delta = -1;
 						item = null;
 					} else {
-						if (item.stop < time) {
+						if (item.end < time) {
 							delta = 1;
 							item = null;
 						} else {

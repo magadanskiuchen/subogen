@@ -10,9 +10,15 @@ define('com.magadanski.EventDispatcher', function () {
 	}
 	
 	EventDispatcher.prototype.dispatchEvent = function (eventType, eventObj) {
+		if (typeof(eventObj) == 'undefined') {
+			eventObj = {};
+		}
+		
 		if (typeof(events[eventType]) == 'object') {
 			for (var callback in events[eventType]) {
 				eventObj.type = eventType;
+				eventObj.currentTarget = this;
+				
 				if (typeof(events[eventType][callback]) == 'function') events[eventType][callback](eventObj);
 			}
 		}

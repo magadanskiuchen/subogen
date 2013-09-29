@@ -12,6 +12,14 @@ com.magadanski.utils.removeClass = function (element, className) {
 	}
 }
 
+com.magadanski.utils.insertAfter = function (element, sibling) {
+	if (sibling.nextSibling) {
+		sibling.parentNode.insertBefore(element, sibling.nextSibling);
+	} else {
+		sibling.parentNode.appendChild(element);
+	}
+}
+
 // shim for window.URL.createObjectURL
 com.magadanski.utils.createObjectURL = function(file) {
 	var TypeException = inc('com.magadanski.exceptions.TypeException', true);

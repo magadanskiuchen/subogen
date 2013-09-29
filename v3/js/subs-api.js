@@ -1,6 +1,10 @@
 define('com.magadanski.Player', function () {
-	var createObjectURL = inc('com.magadanski.utils.createObjectURL', true);
+	// TODO: custom controls and fullscreen
+	var utils = inc('com.magadanski.utils', true);
 	var TypeException = inc('com.magadanski.exceptions.TypeException', true);
+	
+	var text = '';
+	var subtitleClass = 'subtitles';
 	
 	function Player(p) {
 		var that = this;
@@ -12,10 +16,34 @@ define('com.magadanski.Player', function () {
 	Player.prototype.load = function (file) {
 		if (file instanceof File) {
 			if (this.p.canPlayType(file.type)) {
-				this.p.src = createObjectURL(file);
-			}
+				this.p.src = utils.createObjectURL(file);
+			} // TODO: add "else" statement to let users know video type is not supported
 		} else {
 			throw new TypeException('Player.load requires first argument to be File, ' + file.prototype + ' passed.');
+		}
+	}
+	
+	Player.prototype.text = function (subtitle) {
+		that = this;
+		
+		if (typeof(subtitle) != 'undefined') {
+			if (text != '') {
+				that.p.parentNode.removeChild(that.querySelector('p.' + subtitleClass));
+			}
+			
+			text = subtitle;
+			
+			if (text == '') {
+				that.p.parentNode.removeChild(that.querySelector('p.' + subtitleClass));
+			} else {
+				var t = document.createElement('p');
+				t.innerText = text;
+				utils.addClass(t, subtitleClass);
+				
+				utils.insertAfter(t, that.p);
+			}
+		} else {
+			return text;
 		}
 	}
 	

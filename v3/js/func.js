@@ -5,6 +5,7 @@ inc('com.magadanski.WebApp');
 inc('com.magadanski.exceptions.TypeException');
 inc('com.magadanski.parsers.SubRipParser');
 inc('com.magadanski.SubData');
+inc('com.magadanski.Player');
 
 define('com.magadanski.SubEditor', function () {
 	var currentLine;
@@ -154,7 +155,7 @@ subogen.addEventListener('init', function () {
 		utils.removeClass(document.body, 'dropTarget');
 	}, true);
 	
-	subogen.player = new com.magadanski.Player(document.getElementById('player'));
+	subogen.player = new Player(document.getElementById('player'));
 	
 	subogen.subEditor = new com.magadanski.SubEditor(document.querySelector('#grid > table'));
 	subogen.subEditor.addEventListener('update', function (e) {

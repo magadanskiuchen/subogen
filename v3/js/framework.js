@@ -10,6 +10,11 @@ function pack(struct) {
 	}
 }
 
+function define(struct, declaration) {
+	pack(struct);
+	declaration();
+}
+
 function inc(struct, local) {
 	if (typeof(local) == 'undefined') local = false;
 	
@@ -28,4 +33,10 @@ function inc(struct, local) {
 			}
 		}
 	}
+}
+
+Function.prototype.inherits = function (parent) {
+	this.prototype = new parent();
+	this.prototype.constructor = parent;
+	this.prototype.parent = parent.prototype;
 }

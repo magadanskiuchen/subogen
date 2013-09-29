@@ -1,7 +1,4 @@
-pack('com.magadanski.exceptions');
-
-com.magadanski.exceptions.Exception = null;
-(function () {
+define('com.magadanski.exceptions.Exception', function () {
 	function Exception(message) {
 		this.message = message;
 	}
@@ -11,17 +8,14 @@ com.magadanski.exceptions.Exception = null;
 	}
 	
 	com.magadanski.exceptions.Exception = Exception;
-})();
+});
 
-com.magadanski.exceptions.TypeException = null;
-(function () {
+define('com.magadanski.exceptions.TypeException', function () {
 	function TypeException(message) {
 		var that = this;
 	}
-
-	TypeException.prototype = new com.magadanski.exceptions.Exception();
-	TypeException.prototype.constructor = TypeException;
-	TypeException.prototype.parent = com.magadanski.exceptions.Exception.prototype;
+	
+	TypeException.inherits(com.magadanski.exceptions.Exception);
 	
 	com.magadanski.exceptions.TypeException = TypeException;
-})();
+});

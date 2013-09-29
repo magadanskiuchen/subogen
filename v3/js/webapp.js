@@ -1,7 +1,4 @@
-pack('com.magadanski');
-
-com.magadanski.EventDispatcher = null;
-(function () {
+define('com.magadanski.EventDispatcher', function () {
 	var events = {};
 	
 	function EventDispatcher() {};
@@ -22,10 +19,9 @@ com.magadanski.EventDispatcher = null;
 	}
 	
 	com.magadanski.EventDispatcher = EventDispatcher;
-})();
+});
 
-com.magadanski.WebApp = null;
-(function () {
+define('com.magadanski.WebApp', function () {
 	function WebApp() {
 		var that = this;
 		
@@ -46,9 +42,7 @@ com.magadanski.WebApp = null;
 		});
 	};
 	
-	WebApp.prototype = new com.magadanski.EventDispatcher();
-	WebApp.prototype.constructor = WebApp;
-	WebApp.prototype.parent = com.magadanski.EventDispatcher.prototype;
+	WebApp.inherits(com.magadanski.EventDispatcher);
 	
 	com.magadanski.WebApp = WebApp;
-})();
+});

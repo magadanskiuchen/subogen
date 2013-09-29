@@ -1,7 +1,4 @@
-pack('com.magadanski.parsers');
-
-com.magadanski.Player = null;
-(function () {
+define('com.magadanski.Player', function () {
 	var createObjectURL = inc('com.magadanski.utils.createObjectURL', true);
 	var TypeException = inc('com.magadanski.exceptions.TypeException', true);
 	
@@ -23,10 +20,9 @@ com.magadanski.Player = null;
 	}
 	
 	com.magadanski.Player = Player;
-})();
+});
 
-com.magadanski.parsers.SubParser = null;
-(function () {
+define('com.magadanski.parsers.SubParser', function () {
 	function SubParser() {
 		var that = this;
 		
@@ -43,19 +39,16 @@ com.magadanski.parsers.SubParser = null;
 	}
 	
 	com.magadanski.parsers.SubParser = SubParser;
-})();
+});
 
-com.magadanski.parsers.SubTextParser = null;
-(function () {
+define('com.magadanski.parsers.SubTextParser', function () {
 	function SubTextParser() {
 		var that = this;
 		
 		that.priority = -1;
 	}
 	
-	SubTextParser.prototype = new com.magadanski.parsers.SubParser();
-	SubTextParser.prototype.constructor = SubTextParser;
-	SubTextParser.prototype.parent = com.magadanski.parsers.SubParser.prototype;
+	SubTextParser.inherits(com.magadanski.parsers.SubParser);
 	
 	SubTextParser.prototype.test = function (text) {
 		return true;
@@ -73,10 +66,9 @@ com.magadanski.parsers.SubTextParser = null;
 	}
 	
 	com.magadanski.parsers.SubTextParser = SubTextParser;
-})();
+});
 
-com.magadanski.parsers.SubRipParser = null;
-(function () {
+define('com.magadanski.parsers.SubRipParser', function () {
 	// private variables
 	var syntax, itemSyntax;
 	
@@ -87,9 +79,7 @@ com.magadanski.parsers.SubRipParser = null;
 		itemSyntax = /(\d+)[^\n]*\n(\d\d:\d\d:\d\d,\d\d\d)\s-->\s(\d\d:\d\d:\d\d,\d\d\d)[^\n]*\n(.*)/;
 	}
 	
-	SubRipParser.prototype = new com.magadanski.parsers.SubParser();
-	SubRipParser.prototype.constructor = SubRipParser;
-	SubRipParser.prototype.parent = com.magadanski.parsers.SubParser.prototype;
+	SubRipParser.inherits(com.magadanski.parsers.SubParser);
 	
 	SubRipParser.prototype.test = function (text) {
 		return syntax.test(text);
@@ -121,10 +111,9 @@ com.magadanski.parsers.SubRipParser = null;
 	}
 	
 	com.magadanski.parsers.SubRipParser = SubRipParser;
-})();
+});
 
-com.magadanski.parsers.SubAutoParser = null;
-(function () {
+define('com.magadanski.parsers.SubAutoParser', function () {
 	function SubAutoParser(text) {
 		var that = this;
 		
@@ -152,15 +141,12 @@ com.magadanski.parsers.SubAutoParser = null;
 		return parser;
 	}
 	
-	SubAutoParser.prototype = new com.magadanski.parsers.SubParser();
-	SubAutoParser.prototype.constructor = SubAutoParser;
-	SubAutoParser.prototype.parent = com.magadanski.parsers.SubParser.prototype;
+	SubAutoParser.inherits(com.magadanski.parsers.SubParser);
 	
 	com.magadanski.parsers.SubAutoParser = SubAutoParser;
-})();
+});
 
-com.magadanski.SubData = null;
-(function () {
+define('com.magadanski.SubData', function () {
 	var SubAutoParser = inc('com.magadanski.parsers.SubAutoParser', true);
 	
 	function SubData(text) {
@@ -225,4 +211,4 @@ com.magadanski.SubData = null;
 	}
 	
 	com.magadanski.SubData = SubData;
-})();
+});

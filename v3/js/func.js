@@ -1,15 +1,12 @@
-pack('com.magadanski');
-
 inc('com.magadanski.utils');
 
-inc('com.magadanski.exceptions.TypeException');
 inc('com.magadanski.EventDispatcher');
+inc('com.magadanski.WebApp');
+inc('com.magadanski.exceptions.TypeException');
 inc('com.magadanski.parsers.SubRipParser');
 inc('com.magadanski.SubData');
-inc('com.magadanski.WebApp');
 
-com.magadanski.SubEditor = null;
-(function () {
+define('com.magadanski.SubEditor', function () {
 	var currentLine;
 	
 	function SubEditor(g) {
@@ -22,9 +19,7 @@ com.magadanski.SubEditor = null;
 		that.subData = null;
 	}
 	
-	SubEditor.prototype = new EventDispatcher();
-	SubEditor.prototype.constructor = SubEditor;
-	SubEditor.prototype.parent = EventDispatcher.prototype;
+	SubEditor.inherits(EventDispatcher);
 	
 	SubEditor.prototype.CURRENT_LINE_CLASS = 'currentLine';
 	
@@ -91,10 +86,9 @@ com.magadanski.SubEditor = null;
 	}
 	
 	com.magadanski.SubEditor = SubEditor;
-})();
+});
 
-com.magadanski.Subogen = null;
-(function () {
+define('com.magadanski.Subogen', function () {
 	function Subogen() {
 		this.player = null;
 		
@@ -114,9 +108,7 @@ com.magadanski.Subogen = null;
 		this.helpButton = null;
 	}
 	
-	Subogen.prototype = new WebApp();
-	Subogen.prototype.constructor = Subogen;
-	Subogen.prototype.parent = WebApp.prototype;
+	Subogen.inherits(WebApp);
 	
 	Subogen.prototype.loadSubs = function (file) {
 		var that = this;
@@ -136,7 +128,7 @@ com.magadanski.Subogen = null;
 	}
 	
 	com.magadanski.Subogen = Subogen;
-})();
+});
 
 subogen = new com.magadanski.Subogen();
 subogen.addEventListener('init', function () {

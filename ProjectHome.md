@@ -1,0 +1,1 @@
+A tool that helps you setup a sub-rip format (.srt) subtitles from a simple text file.
